@@ -22,6 +22,8 @@ model Tenant {
   patients      Patient[]
   prescriptions Prescription[]
   appointments  Appointment[]
+  bills         Bill[]
+
 }
 
 model PlatformUser {
@@ -104,6 +106,8 @@ model Patient {
   doctorId      String?
   prescriptions Prescription[]
   appointments  Appointment[]
+  bills         Bill[]
+
 }
 
 model Prescription {
@@ -153,4 +157,30 @@ model Appointment {
   status String   @default("SCHEDULED")
 
   createdAt DateTime @default(now())
+}
+
+model Bill {
+  id           String        @id @default(uuid())
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+
+  patientId    String
+  patient      Patient       @relation(fields: [patientId], references: [id])
+
+  totalAmount  Float         @default(0)
+  paidAmount   Float         @default(0)
+  dueAmount    Float         @default(0)
+  status       String        @default("UNPAID") // UNPAID | PARTIAL | PAID
+
+  items        BillItem[]
+  createdAt    DateTime      @default(now())
+}
+
+model BillItem {
+  id        String   @id @default(uuid())
+  billId    String
+  bill      Bill     @relation(fields: [billId], references: [id])
+
+  title     String   // Example: "Consultation Fee"
+  amount    Float
 }
