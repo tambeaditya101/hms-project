@@ -1,0 +1,15 @@
+import { Router } from "express";
+import { authenticate } from "../../middleware/auth.middleware.js";
+import { enforceTenantAccess } from "../../middleware/tenant.middleware.js";
+import { handleDashboardSummary } from "./dashboard.controller.js";
+
+const router = Router();
+
+router.get(
+  "/summary",
+  authenticate,
+  enforceTenantAccess,
+  handleDashboardSummary
+);
+
+export default router;
