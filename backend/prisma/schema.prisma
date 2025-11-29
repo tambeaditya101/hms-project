@@ -7,8 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model Tenant {
   id            String   @id @default(uuid())
   name          String
@@ -20,9 +18,10 @@ model Tenant {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  users          User[]
-  patients       Patient[]
-  prescriptions  Prescription[]
+  users         User[]
+  patients      Patient[]
+  prescriptions Prescription[]
+  appointments  Appointment[]
 }
 
 model PlatformUser {
@@ -48,90 +47,110 @@ model Permission {
 }
 
 model RolePermission {
-  id           String      @id @default(uuid())
+  id           String     @id @default(uuid())
   roleId       String
   permissionId String
-  role         Role        @relation(fields: [roleId], references: [id])
-  permission   Permission  @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
 }
 
-
 model User {
-  id           String    @id @default(uuid())
-  tenantId     String
-  tenant       Tenant    @relation(fields: [tenantId], references: [id])
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 
   firstName    String
   lastName     String
-  email        String    @unique
+  email        String  @unique
   phone        String?
-  username     String    @unique
+  username     String  @unique
   passwordHash String
   department   String?
-  status       String    @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
+  status       String  @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
 
-  roles        String[]  // simple: store role names ["HOSPITAL_ADMIN", "DOCTOR"]
+  roles String[] // simple: store role names ["HOSPITAL_ADMIN", "DOCTOR"]
 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  patients     Patient[] @relation("DoctorPatients")
-  prescriptions Prescription[]
+  patients           Patient[]      @relation("DoctorPatients")
+  prescriptions      Prescription[]
+  doctorAppointments Appointment[]  @relation("DoctorAppointments")
 }
 
 model Patient {
-  id            String    @id @default(uuid())
-  tenantId      String
-  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  patientUid    String    @unique
-  firstName     String
-  lastName      String?
-  dob           DateTime?
-  gender        String?
-  bloodGroup    String?
-  email         String?
-  phone         String?
-  address       String?
+  patientUid       String    @unique
+  firstName        String
+  lastName         String?
+  dob              DateTime?
+  gender           String?
+  bloodGroup       String?
+  email            String?
+  phone            String?
+  address          String?
   emergencyContact String?
 
-  type          String    // OPD / IPD
-  photoUrl      String?
+  type     String // OPD / IPD
+  photoUrl String?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  doctor        User?     @relation("DoctorPatients", fields: [doctorId], references: [id])
+  doctor        User?          @relation("DoctorPatients", fields: [doctorId], references: [id])
   doctorId      String?
   prescriptions Prescription[]
+  appointments  Appointment[]
 }
 
 model Prescription {
-  id              String                 @id @default(uuid())
-  tenantId        String
-  tenant          Tenant                 @relation(fields: [tenantId], references: [id])
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  prescriptionUid String                 @unique
+  prescriptionUid String  @unique
   patientId       String
-  patient         Patient                @relation(fields: [patientId], references: [id])
+  patient         Patient @relation(fields: [patientId], references: [id])
 
-  doctorId        String
-  doctor          User                   @relation(fields: [doctorId], references: [id])
+  doctorId String
+  doctor   User   @relation(fields: [doctorId], references: [id])
 
-  notes           String?
-  createdAt       DateTime               @default(now())
+  notes     String?
+  createdAt DateTime @default(now())
 
-  medicines       PrescriptionMedicine[]
+  medicines PrescriptionMedicine[]
 }
 
 model PrescriptionMedicine {
-  id             String        @id @default(uuid())
+  id             String       @id @default(uuid())
   prescriptionId String
-  prescription   Prescription  @relation(fields: [prescriptionId], references: [id])
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
 
-  medicineName   String
-  dosage         String?
-  frequency      String?
-  duration       String?
-  instructions   String?
+  medicineName String
+  dosage       String?
+  frequency    String?
+  duration     String?
+  instructions String?
+}
+
+model Appointment {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  doctorId String
+  doctor   User   @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  date   DateTime
+  time   String
+  reason String?
+  status String   @default("SCHEDULED")
+
+  createdAt DateTime @default(now())
 }

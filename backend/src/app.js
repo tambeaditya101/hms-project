@@ -10,6 +10,7 @@ import userRoutes from "./modules/users/user.routes.js";
 import patientRoutes from "./modules/patients/patient.routes.js";
 import prescriptionRoutes from "./modules/prescriptions/prescription.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
+import appointmentRoutes from "./modules/appointments/appointment.routes.js";
 
 import { authenticate } from "./middleware/auth.middleware.js";
 import { enforceTenantAccess } from "./middleware/tenant.middleware.js";
@@ -44,5 +45,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 export default app;
