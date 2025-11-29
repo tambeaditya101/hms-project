@@ -33,7 +33,15 @@ export async function handleGetAppointments(req, res) {
   try {
     const tenantId = req.tenantId;
 
-    const appointments = await getAppointments(tenantId);
+    const filters = {
+      date: req.query.date,
+      status: req.query.status,
+      today: req.query.today === "true",
+      upcoming: req.query.upcoming === "true",
+      doctorId: req.query.doctorId,
+    };
+
+    const appointments = await getAppointments(tenantId, filters);
 
     res.status(200).json({ appointments });
   } catch (error) {

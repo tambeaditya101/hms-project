@@ -45,14 +45,52 @@ export async function createAppointment(data) {
   });
 }
 
-export async function getAppointments(tenantId) {
+export async function getAppointments(tenantId, filters) {
+  const where = { tenantId };
+
+  // Filter by doctor
+  if (filters.doctorId) {
+    where.doctorId = filters.doctorId;
+  }
+
+  // Filter by status
+  if (filters.status) {
+    where.status = filters.status.toUpperCase();
+  }
+
+  // Filter by specific date
+  if (filters.date) {
+    where.date = new Date(filters.date);
+  }
+
+  // Today's appointments
+  if (filters.today) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    where.date = {
+      gte: start,
+      lte: end,
+    };
+  }
+
+  // Upcoming appointments = date >= NOW
+  if (filters.upcoming) {
+    where.date = {
+      gte: new Date(),
+    };
+  }
+
   return prisma.appointment.findMany({
-    where: { tenantId },
+    where,
     include: {
       patient: true,
       doctor: true,
     },
-    orderBy: { date: "asc" },
+    orderBy: [{ date: "asc" }, { time: "asc" }],
   });
 }
 
