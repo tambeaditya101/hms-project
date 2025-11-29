@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Tenant {
+  id            String   @id @default(uuid())
+  name          String
+  address       String?
+  contactEmail  String
+  contactPhone  String?
+  licenseNumber String   @unique
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users          User[]
+  patients       Patient[]
+  prescriptions  Prescription[]
+}
+
+model PlatformUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String      @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role        @relation(fields: [roleId], references: [id])
+  permission   Permission  @relation(fields: [permissionId], references: [id])
+}
+
+
+model User {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id])
+
+  firstName    String
+  lastName     String
+  email        String    @unique
+  phone        String?
+  username     String    @unique
+  passwordHash String
+  department   String?
+  status       String    @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
+
+  roles        String[]  // simple: store role names ["HOSPITAL_ADMIN", "DOCTOR"]
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  patients     Patient[] @relation("DoctorPatients")
+  prescriptions Prescription[]
+}
+
+model Patient {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+
+  patientUid    String    @unique
+  firstName     String
+  lastName      String?
+  dob           DateTime?
+  gender        String?
+  bloodGroup    String?
+  email         String?
+  phone         String?
+  address       String?
+  emergencyContact String?
+
+  type          String    // OPD / IPD
+  photoUrl      String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  doctor        User?     @relation("DoctorPatients", fields: [doctorId], references: [id])
+  doctorId      String?
+  prescriptions Prescription[]
+}
+
+model Prescription {
+  id              String                 @id @default(uuid())
+  tenantId        String
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id])
+
+  prescriptionUid String                 @unique
+  patientId       String
+  patient         Patient                @relation(fields: [patientId], references: [id])
+
+  doctorId        String
+  doctor          User                   @relation(fields: [doctorId], references: [id])
+
+  notes           String?
+  createdAt       DateTime               @default(now())
+
+  medicines       PrescriptionMedicine[]
+}
+
+model PrescriptionMedicine {
+  id             String        @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription  @relation(fields: [prescriptionId], references: [id])
+
+  medicineName   String
+  dosage         String?
+  frequency      String?
+  duration       String?
+  instructions   String?
+}
