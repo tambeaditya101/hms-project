@@ -1,15 +1,22 @@
-import Sidebar from "./Sidebar";
+import { Outlet } from "react-router-dom";
 import Topbar from "./Topbar";
+import Sidebar from "./Sidebar";
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
-    <div className="flex">
+    <div className="flex h-screen">
+      {/* Sidebar */}
       <Sidebar />
 
+      {/* Main area */}
       <div className="flex-1 flex flex-col">
+        {/* Topbar */}
         <Topbar />
 
-        <main className="p-6 bg-gray-50 min-h-screen">{children}</main>
+        {/* Page Content */}
+        <div className="p-6 mt-16">
+          <Outlet /> {/* ← VERY IMPORTANT */}
+        </div>
       </div>
     </div>
   );

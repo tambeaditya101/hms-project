@@ -27,14 +27,14 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold">Dashboard Overview</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Patients" value={summary.totalPatients} />
-        <StatCard title="Total Doctors" value={summary.totalDoctors} />
+        <StatCard title="Total Patients" value={summary?.totalPatients} />
+        <StatCard title="Total Doctors" value={summary?.totalDoctors} />
         <StatCard
           title="Today's Appointments"
-          value={summary.todaysAppointments}
+          value={summary?.todaysAppointments}
         />
-        <StatCard title="Pending Bills" value={summary.pendingBills} />
-        <StatCard title="Total Revenue" value={`₹${summary.totalRevenue}`} />
+        <StatCard title="Pending Bills" value={summary?.pendingBills} />
+        <StatCard title="Total Revenue" value={`₹${summary?.totalRevenue}`} />
       </div>
     </div>
   );
