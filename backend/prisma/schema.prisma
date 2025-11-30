@@ -14,7 +14,7 @@ model Tenant {
   contactEmail  String
   contactPhone  String?
   licenseNumber String   @unique
-  status        String   @default("PENDING")
+  status        String   @default("ACTIVE")//can keep pending because hospital needs to undergo some verification to fully onboard. future implementation.
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

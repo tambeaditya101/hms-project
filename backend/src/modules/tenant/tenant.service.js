@@ -23,7 +23,6 @@ export async function registerTenant(data) {
         contactEmail,
         contactPhone,
         licenseNumber,
-        status: "PENDING",
       },
     });
 

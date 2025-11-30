@@ -18,7 +18,7 @@ export async function handleRegisterTenant(req, res) {
     });
 
     res.status(201).json({
-      message: "Tenant registered successfully (PENDING)",
+      message: "Tenant registered successfully",
       tenant: {
         id: tenant.id,
         name: tenant.name,
