@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { enforceTenantAccess } from "../../middleware/tenant.middleware.js";
+import { authorizeRoles } from "../../middleware/role.middleware.js";
+
 import {
   handleCreateBill,
   handleGetBills,
@@ -10,21 +12,39 @@ import {
 
 const router = Router();
 
-router.post("/create", authenticate, enforceTenantAccess, handleCreateBill);
+// CREATE BILL
+router.post(
+  "/create",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  handleCreateBill
+);
 
-router.get("/", authenticate, enforceTenantAccess, handleGetBills);
+// GET ALL BILLS
+router.get(
+  "/",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  handleGetBills
+);
 
+// GET BILLS FOR A PATIENT
 router.get(
   "/patient/:patientId",
   authenticate,
   enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST"),
   handleGetPatientBills
 );
 
+// ADD PAYMENT TO BILL
 router.post(
   "/:billId/pay",
   authenticate,
   enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST"),
   handleAddPayment
 );
 

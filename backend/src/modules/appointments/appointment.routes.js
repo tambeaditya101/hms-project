@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { enforceTenantAccess } from "../../middleware/tenant.middleware.js";
+import { authorizeRoles } from "../../middleware/role.middleware.js";
+
 import {
   handleCreateAppointment,
   handleGetAppointments,
@@ -10,30 +12,39 @@ import {
 
 const router = Router();
 
-// Book appointment
+// BOOK APPOINTMENT
 router.post(
   "/create",
   authenticate,
   enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR", "NURSE"),
   handleCreateAppointment
 );
 
-// List all tenant appointments
-router.get("/", authenticate, enforceTenantAccess, handleGetAppointments);
+// LIST ALL TENANT APPOINTMENTS
+router.get(
+  "/",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR", "NURSE"),
+  handleGetAppointments
+);
 
-// List appointments for a specific doctor
+// LIST APPOINTMENTS FOR A SPECIFIC DOCTOR
 router.get(
   "/doctor/:doctorId",
   authenticate,
   enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR", "NURSE"),
   handleGetDoctorAppointments
 );
 
-// Update status (completed/cancelled)
+// UPDATE APPOINTMENT STATUS (completed/cancelled)
 router.patch(
   "/:id/status",
   authenticate,
   enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR"),
   handleUpdateAppointmentStatus
 );
 
