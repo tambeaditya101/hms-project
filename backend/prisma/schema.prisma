@@ -14,7 +14,7 @@ model Tenant {
   contactEmail  String
   contactPhone  String?
   licenseNumber String   @unique
-  status        String   @default("ACTIVE")//can keep pending because hospital needs to undergo some verification to fully onboard. future implementation.
+  status        String   @default("ACTIVE") //can keep pending because hospital needs to undergo some verification to fully onboard. future implementation.
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -23,37 +23,6 @@ model Tenant {
   prescriptions Prescription[]
   appointments  Appointment[]
   bills         Bill[]
-
-}
-
-model PlatformUser {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  role         String
-  createdAt    DateTime @default(now())
-}
-
-model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String?
-  permissions RolePermission[]
-}
-
-model Permission {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String?
-  roles       RolePermission[]
-}
-
-model RolePermission {
-  id           String     @id @default(uuid())
-  roleId       String
-  permissionId String
-  role         Role       @relation(fields: [roleId], references: [id])
-  permission   Permission @relation(fields: [permissionId], references: [id])
 }
 
 model User {
@@ -107,7 +76,6 @@ model Patient {
   prescriptions Prescription[]
   appointments  Appointment[]
   bills         Bill[]
-
 }
 
 model Prescription {
@@ -160,27 +128,27 @@ model Appointment {
 }
 
 model Bill {
-  id           String        @id @default(uuid())
-  tenantId     String
-  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  patientId    String
-  patient      Patient       @relation(fields: [patientId], references: [id])
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
 
-  totalAmount  Float         @default(0)
-  paidAmount   Float         @default(0)
-  dueAmount    Float         @default(0)
-  status       String        @default("UNPAID") // UNPAID | PARTIAL | PAID
+  totalAmount Float  @default(0)
+  paidAmount  Float  @default(0)
+  dueAmount   Float  @default(0)
+  status      String @default("UNPAID") // UNPAID | PARTIAL | PAID
 
-  items        BillItem[]
-  createdAt    DateTime      @default(now())
+  items     BillItem[]
+  createdAt DateTime   @default(now())
 }
 
 model BillItem {
-  id        String   @id @default(uuid())
-  billId    String
-  bill      Bill     @relation(fields: [billId], references: [id])
+  id     String @id @default(uuid())
+  billId String
+  bill   Bill   @relation(fields: [billId], references: [id])
 
-  title     String   // Example: "Consultation Fee"
-  amount    Float
+  title  String // Example: "Consultation Fee"
+  amount Float
 }
