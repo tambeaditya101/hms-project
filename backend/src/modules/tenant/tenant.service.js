@@ -45,7 +45,7 @@ export async function registerTenant(data) {
         passwordHash,
         department: "ADMINISTRATION",
         status: "ACTIVE",
-        roles: ["HOSPITAL_ADMIN"],
+        roles: ["ADMIN"],
       },
     });
 
