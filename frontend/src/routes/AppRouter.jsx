@@ -2,9 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Layout from "../components/layout/Layout";
 import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
 
 // Dummy placeholder pages
-const Dashboard = () => <h1>Dashboard</h1>;
+// const Dashboard = () => <h1>Dashboard</h1>;
 const Patients = () => <h1>Patients</h1>;
 const Appointments = () => <h1>Appointments</h1>;
 const Prescriptions = () => <h1>Prescriptions</h1>;
