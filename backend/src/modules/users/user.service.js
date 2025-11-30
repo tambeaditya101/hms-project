@@ -1,10 +1,14 @@
 import prisma from "../../config/prisma.js";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import { validateUserInput } from "./user.validation.js";
 
 export async function createUser(data) {
   const { tenantId, firstName, lastName, email, phone, department, roles } =
     data;
+
+  // Validate roles + department
+  const validated = validateUserInput({ roles, department });
 
   // Check duplicate email in same tenant
   const exists = await prisma.user.findFirst({
@@ -32,10 +36,10 @@ export async function createUser(data) {
       lastName,
       email,
       phone,
-      department,
+      roles: validated.roles,
+      department: validated.department,
       username,
       passwordHash,
-      roles,
     },
   });
 
