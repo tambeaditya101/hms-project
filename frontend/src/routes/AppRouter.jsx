@@ -5,14 +5,15 @@ import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import TenantRegister from "../pages/TenantRegister";
 import Unauthorized from "../pages/Unauthorized";
+import PatientsList from "../pages/patients/PatientsList";
+import PatientDetails from "../pages/patients/PatientDetails";
+import CreatePatient from "../pages/patients/CreatePatient";
+import AppointmentsList from "../pages/appointments/AppointmentsList";
+import CreateAppointment from "../pages/appointments/CreateAppointment";
 
-// Dummy pages
-const Patients = () => <h1>Patients</h1>;
-const Appointments = () => <h1>Appointments</h1>;
 const Prescriptions = () => <h1>Prescriptions</h1>;
 const Billing = () => <h1>Billing</h1>;
 const Users = () => <h1>Users</h1>;
-// const Unauthorized = () => <h1>Unauthorized</h1>;
 
 export default function AppRouter() {
   return (
@@ -39,27 +40,15 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-
         {/* PATIENTS */}
         <Route
           path="patients"
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "NURSE"]}>
-              <Patients />
+              <PatientsList />
             </ProtectedRoute>
           }
         />
-
-        {/* APPOINTMENTS */}
-        <Route
-          path="appointments"
-          element={
-            <ProtectedRoute allowedRoles={["ADMIN", "DOCTOR", "RECEPTIONIST"]}>
-              <Appointments />
-            </ProtectedRoute>
-          }
-        />
-
         {/* PRESCRIPTIONS */}
         <Route
           path="prescriptions"
@@ -69,7 +58,6 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-
         {/* BILLING */}
         <Route
           path="billing"
@@ -79,7 +67,6 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-
         {/* USERS */}
         <Route
           path="users"
@@ -89,7 +76,39 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/patients/create"
+          element={
+            <ProtectedRoute>
+              <CreatePatient />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients/:id"
+          element={
+            <ProtectedRoute>
+              <PatientDetails />
+            </ProtectedRoute>
+          }
+        />
+        // inside the protected "/" layout route:
+        <Route
+          path="appointments"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "DOCTOR", "RECEPTIONIST"]}>
+              <AppointmentsList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="appointments/create"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "RECEPTIONIST"]}>
+              <CreateAppointment />
+            </ProtectedRoute>
+          }
+        />
         {/* UNAUTHORIZED */}
         <Route path="unauthorized" element={<Unauthorized />} />
       </Route>
