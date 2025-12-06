@@ -32,7 +32,7 @@ export default function UsersList() {
   });
 
   const ROLES = [
-    "HOSPITAL_ADMIN",
+    "ADMIN",
     "DOCTOR",
     "NURSE",
     "RECEPTIONIST",
@@ -51,7 +51,7 @@ export default function UsersList() {
 
   // Chip Color Mappings
   const ROLE_COLORS = {
-    HOSPITAL_ADMIN: "primary",
+    ADMIN: "primary",
     DOCTOR: "success",
     NURSE: "secondary",
     RECEPTIONIST: "warning",
@@ -224,9 +224,20 @@ export default function UsersList() {
               <TextField
                 fullWidth
                 select
-                label="Filter by Role"
-                value={filters.role}
+                value={filters.role || ""}
                 onChange={(e) => setField("role", e.target.value)}
+                placeholder="Filter by Role"
+                SelectProps={{
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (!selected || selected === "") {
+                      return (
+                        <span style={{ color: "#9e9e9e" }}>Filter by Role</span>
+                      );
+                    }
+                    return selected;
+                  },
+                }}
               >
                 <MenuItem value="">All</MenuItem>
                 {ROLES.map((role) => (
@@ -242,9 +253,22 @@ export default function UsersList() {
               <TextField
                 fullWidth
                 select
-                label="Filter by Department"
-                value={filters.department}
+                value={filters.department || ""}
                 onChange={(e) => setField("department", e.target.value)}
+                placeholder="Filter by Department"
+                SelectProps={{
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (!selected || selected === "") {
+                      return (
+                        <span style={{ color: "#9e9e9e" }}>
+                          Filter by Department
+                        </span>
+                      );
+                    }
+                    return selected;
+                  },
+                }}
               >
                 <MenuItem value="">All</MenuItem>
                 {DEPARTMENTS.map((d) => (

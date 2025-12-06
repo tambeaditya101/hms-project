@@ -40,8 +40,7 @@ export default function AppointmentsList() {
   });
 
   const canCreate =
-    user?.roles?.includes("HOSPITAL_ADMIN") ||
-    user?.roles?.includes("RECEPTIONIST");
+    user?.roles?.includes("") || user?.roles?.includes("RECEPTIONIST");
 
   // Load doctors for filter dropdown
   const fetchDoctors = async () => {

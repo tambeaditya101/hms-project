@@ -38,7 +38,7 @@ export default function CreateUser() {
 
   // Backend-safe Lists
   const ROLE_OPTIONS = [
-    "HOSPITAL_ADMIN",
+    "ADMIN",
     "DOCTOR",
     "NURSE",
     "RECEPTIONIST",

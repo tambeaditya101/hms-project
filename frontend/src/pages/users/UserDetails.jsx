@@ -23,7 +23,7 @@ const STATUS_COLORS = {
 };
 
 const ROLE_COLORS = {
-  HOSPITAL_ADMIN: "primary",
+  ADMIN: "primary",
   ADMIN: "primary",
   DOCTOR: "success",
   NURSE: "secondary",
