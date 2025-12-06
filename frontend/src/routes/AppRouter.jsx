@@ -10,10 +10,13 @@ import PatientDetails from "../pages/patients/PatientDetails";
 import CreatePatient from "../pages/patients/CreatePatient";
 import AppointmentsList from "../pages/appointments/AppointmentsList";
 import CreateAppointment from "../pages/appointments/CreateAppointment";
+import EditUser from "../pages/users/EditUser";
+import UserDetails from "../pages/users/UserDetails";
+import CreateUser from "../pages/users/CreateUser";
+import UsersList from "../pages/users/UsersList";
 
 const Prescriptions = () => <h1>Prescriptions</h1>;
 const Billing = () => <h1>Billing</h1>;
-const Users = () => <h1>Users</h1>;
 
 export default function AppRouter() {
   return (
@@ -67,12 +70,36 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-        {/* USERS */}
+        /* USERS MODULE ROUTES */
         <Route
-          path="users"
+          path="/users"
           element={
             <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <Users />
+              <UsersList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/create"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <CreateUser />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <UserDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <EditUser />
             </ProtectedRoute>
           }
         />

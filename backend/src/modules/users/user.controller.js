@@ -1,4 +1,4 @@
-import { createUser, getUsers } from "./user.service.js";
+import { createUser, getUsers, updateUser } from "./user.service.js";
 
 export async function handleCreateUser(req, res) {
   try {
@@ -36,5 +36,35 @@ export async function handleGetUsers(req, res) {
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+}
+
+export async function handleUpdateUser(req, res) {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const updated = await updateUser(id, data);
+
+    res.json({
+      message: "User updated successfully",
+      user: updated,
+    });
+  } catch (err) {
+    console.error("Update user error:", err);
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export async function handleDeleteUser(req, res) {
+  try {
+    const { id } = req.params;
+
+    await deleteUser(id);
+
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ message: err.message });
   }
 }

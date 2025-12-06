@@ -7,7 +7,7 @@ export default function Topbar() {
   const user = useSelector((state) => state.auth.user);
 
   const hospitalName = user?.tenantName || "Hospital Management System";
-  const role = user?.roles?.[0] || "USER";
+  const department = user?.department || "User";
 
   return (
     <AppBar
@@ -51,7 +51,7 @@ export default function Topbar() {
         <Box display="flex" alignItems="center" gap={2}>
           {/* Role badge */}
           <Chip
-            label={role}
+            label={department}
             color="primary"
             variant="outlined"
             sx={{

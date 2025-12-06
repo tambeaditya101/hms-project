@@ -44,6 +44,7 @@ export async function loginUser(email, password) {
       email: user.email,
       username: user.username,
       roles: user.roles,
+      department: user.department, // Add this line
     },
   };
 }

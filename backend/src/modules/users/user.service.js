@@ -69,3 +69,16 @@ export async function getUsers(tenantId) {
     },
   });
 }
+
+export async function updateUser(id, data) {
+  return prisma.user.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function deleteUser(id) {
+  return prisma.user.delete({
+    where: { id },
+  });
+}

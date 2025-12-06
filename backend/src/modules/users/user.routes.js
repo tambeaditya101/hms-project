@@ -1,8 +1,14 @@
 import { Router } from "express";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { enforceTenantAccess } from "../../middleware/tenant.middleware.js";
-import { authorizeRoles } from "../../middleware/role.middleware.js"; // <-- Missing earlier
-import { handleCreateUser, handleGetUsers } from "./user.controller.js";
+import { authorizeRoles } from "../../middleware/role.middleware.js";
+
+import {
+  handleCreateUser,
+  handleGetUsers,
+  handleUpdateUser,
+  handleDeleteUser,
+} from "./user.controller.js";
 
 const router = Router();
 
@@ -11,17 +17,35 @@ router.post(
   "/create",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN"), // Only ADMIN can create users
+  authorizeRoles("ADMIN"),
   handleCreateUser
 );
 
-// GET ALL USERS (Tenant scoped)
+// GET ALL USERS (Tenant Scoped)
 router.get(
   "/",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN"), // Only ADMIN can list all users
+  authorizeRoles("ADMIN"),
   handleGetUsers
+);
+
+// UPDATE USER
+router.put(
+  "/:id",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN"),
+  handleUpdateUser
+);
+
+// DELETE USER
+router.delete(
+  "/:id",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN"),
+  handleDeleteUser
 );
 
 export default router;
