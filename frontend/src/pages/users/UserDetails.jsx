@@ -10,8 +10,27 @@ import {
   CircularProgress,
   Alert,
   Button,
+  Divider,
+  Avatar,
+  Stack,
 } from "@mui/material";
 import api from "../../utils/axios";
+
+const STATUS_COLORS = {
+  ACTIVE: "success",
+  INACTIVE: "warning",
+  LOCKED: "error",
+};
+
+const ROLE_COLORS = {
+  HOSPITAL_ADMIN: "primary",
+  ADMIN: "primary",
+  DOCTOR: "success",
+  NURSE: "secondary",
+  RECEPTIONIST: "warning",
+  CHEMIST: "info",
+  ACCOUNTANT: "default",
+};
 
 export default function UserDetails() {
   const { id } = useParams();
@@ -23,6 +42,8 @@ export default function UserDetails() {
 
   const fetchUser = async () => {
     try {
+      setLoading(true);
+      setError("");
       const res = await api.get("/users", { params: { id } });
 
       const list = res.data?.users || [];
@@ -30,6 +51,7 @@ export default function UserDetails() {
 
       if (!matched) {
         setError("User not found");
+        return;
       }
 
       setUser(matched);
@@ -42,12 +64,37 @@ export default function UserDetails() {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (id) {
+      fetchUser();
+    }
+  }, [id]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      return new Date(dateString).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      console.log(e);
+
+      return "Invalid date";
+    }
+  };
+
+  const getInitials = (firstName, lastName) => {
+    const f = firstName?.[0] || "";
+    const l = lastName?.[0] || "";
+    return `${f}${l}`.toUpperCase();
+  };
 
   if (loading)
     return (
-      <Box className="flex justify-center p-10">
+      <Box className="flex justify-center items-center min-h-[400px]">
         <CircularProgress />
       </Box>
     );
@@ -55,93 +102,203 @@ export default function UserDetails() {
   if (error || !user)
     return (
       <Box className="p-6">
-        <Alert severity="error">{error || "User not found"}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error || "User not found"}
+        </Alert>
+        <Button variant="outlined" onClick={() => navigate("/users")}>
+          Back to Users
+        </Button>
       </Box>
     );
 
   return (
     <Box className="p-6">
-      {/* Title */}
-      <Typography variant="h4" className="font-bold mb-4">
-        Staff Member Details
-      </Typography>
+      {/* Header */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
+        <Typography variant="h4" fontWeight="bold">
+          Staff Member Details
+        </Typography>
+        <Button variant="outlined" onClick={() => navigate("/users")}>
+          Back to Users
+        </Button>
+      </Box>
 
       {/* Profile Card */}
       <Card className="shadow-lg mb-6">
-        <CardContent>
-          <Grid container spacing={3}>
-            {/* Basic Info */}
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" className="font-bold">
-                {user?.firstName} {user?.lastName}
+        <CardContent sx={{ p: 4 }}>
+          {/* User Header Section */}
+          <Box display="flex" alignItems="center" gap={3} mb={4}>
+            <Avatar
+              sx={{
+                width: 80,
+                height: 80,
+                bgcolor: "primary.main",
+                fontSize: "2rem",
+                fontWeight: "bold",
+              }}
+            >
+              {getInitials(user.firstName, user.lastName)}
+            </Avatar>
+            <Box>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
+                {user.firstName} {user.lastName}
               </Typography>
-
-              <p className="text-gray-600">{user?.email}</p>
-              <p className="text-gray-600">Username: {user?.username}</p>
-              <p className="text-gray-600">Phone: {user?.phone || "—"}</p>
-
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {user.email}
+              </Typography>
               <Chip
-                label={user?.status}
-                color={
-                  user?.status === "ACTIVE"
-                    ? "success"
-                    : user?.status === "LOCKED"
-                    ? "error"
-                    : "warning"
-                }
-                className="mt-2"
+                label={user.status || "UNKNOWN"}
+                color={STATUS_COLORS[user.status] || "default"}
+                size="small"
+                sx={{ mt: 1 }}
               />
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Information Grid */}
+          <Grid container spacing={3}>
+            {/* Basic Information */}
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Basic Information
+              </Typography>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                  >
+                    Username
+                  </Typography>
+                  <Typography variant="body1" fontWeight="500">
+                    {user.username || "—"}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                  >
+                    Phone
+                  </Typography>
+                  <Typography variant="body1" fontWeight="500">
+                    {user.phone || "—"}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                  >
+                    Department
+                  </Typography>
+                  <Typography variant="body1" fontWeight="500">
+                    {user.department || "Not assigned"}
+                  </Typography>
+                </Box>
+              </Stack>
             </Grid>
 
-            {/* Department & Roles */}
-            <Grid item xs={12} md={4}>
-              <p>
-                <strong>Department:</strong>{" "}
-                {user?.department || "Not assigned"}
-              </p>
-
-              <p className="mt-3">
-                <strong>Roles:</strong>
-              </p>
-              <Box className="flex flex-wrap gap-2 mt-2">
-                {user?.roles?.length ? (
+            {/* Roles */}
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Roles
+              </Typography>
+              <Box display="flex" flexWrap="wrap" gap={1}>
+                {user.roles && user.roles.length > 0 ? (
                   user.roles.map((role) => (
-                    <Chip key={role} label={role} color="primary" />
+                    <Chip
+                      key={role}
+                      label={role}
+                      color={ROLE_COLORS[role] || "default"}
+                      size="medium"
+                      sx={{ fontWeight: 500 }}
+                    />
                   ))
                 ) : (
-                  <Chip label="No roles assigned" />
+                  <Chip
+                    label="No roles assigned"
+                    color="default"
+                    variant="outlined"
+                  />
                 )}
               </Box>
             </Grid>
 
             {/* Metadata */}
-            <Grid item xs={12} md={4}>
-              <p>
-                <strong>Created:</strong>{" "}
-                {new Date(user?.createdAt).toLocaleString()}
-              </p>
-
-              <p>
-                <strong>Last Updated:</strong>{" "}
-                {new Date(user?.updatedAt).toLocaleString()}
-              </p>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
+                Metadata
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                    >
+                      Created At
+                    </Typography>
+                    <Typography variant="body1" fontWeight="500">
+                      {formatDate(user.createdAt)}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                    >
+                      Last Updated
+                    </Typography>
+                    <Typography variant="body1" fontWeight="500">
+                      {formatDate(user.updatedAt)}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>
       </Card>
 
-      {/* ACTION BUTTONS */}
-      <Box className="flex gap-4">
+      {/* Action Buttons */}
+      <Box display="flex" gap={2} justifyContent="flex-end">
         <Button
           variant="contained"
           className="!bg-blue-600 hover:!bg-blue-700"
           onClick={() => navigate(`/users/${id}/edit`)}
         >
           Edit User
-        </Button>
-
-        <Button variant="outlined" onClick={() => navigate("/users")}>
-          Back to Users
         </Button>
       </Box>
     </Box>

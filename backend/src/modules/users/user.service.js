@@ -66,6 +66,8 @@ export async function getUsers(tenantId) {
       username: true,
       roles: true,
       status: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 }
