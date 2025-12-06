@@ -14,6 +14,7 @@ import EditUser from "../pages/users/EditUser";
 import UserDetails from "../pages/users/UserDetails";
 import CreateUser from "../pages/users/CreateUser";
 import UsersList from "../pages/users/UsersList";
+import ResetPassword from "../pages/ResetPassword";
 
 const Prescriptions = () => <h1>Prescriptions</h1>;
 const Billing = () => <h1>Billing</h1>;
@@ -133,6 +134,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "RECEPTIONIST"]}>
               <CreateAppointment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <ProtectedRoute>
+              <ResetPassword />
             </ProtectedRoute>
           }
         />

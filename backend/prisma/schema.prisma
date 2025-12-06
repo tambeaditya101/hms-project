@@ -36,6 +36,7 @@ model User {
   phone        String?
   username     String  @unique
   passwordHash String
+  mustResetPassword Boolean @default(true)
   department   String?
   status       String  @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
 

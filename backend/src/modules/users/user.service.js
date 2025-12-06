@@ -10,23 +10,24 @@ export async function createUser(data) {
   // Validate roles + department
   const validated = validateUserInput({ roles, department });
 
-  // Check duplicate email in same tenant
+  // Check duplicate email
   const exists = await prisma.user.findFirst({
     where: { email, tenantId },
   });
 
   if (exists) {
-    throw new Error("User with this email already exists in this tenant");
+    throw new Error("A user with this email already exists in this hospital");
   }
 
-  // Generate random password (for hackathon)
-  const tempPassword = "User@123";
-  const passwordHash = await bcrypt.hash(tempPassword, 10);
+  // Auto-generate username
+  const random = Math.floor(1000 + Math.random() * 9000); // 4 digits
+  const username = `${firstName.toLowerCase()}.${(
+    lastName || "user"
+  ).toLowerCase()}_${random}`;
 
-  // Auto-generate username: first.last.<random>
-  const username = `${firstName.toLowerCase()}.${
-    lastName?.toLowerCase() || "user"
-  }_${Date.now()}`;
+  // Auto-generate temporary password
+  const tempPassword = `Temp@${Math.floor(1000 + Math.random() * 9000)}`;
+  const passwordHash = await bcrypt.hash(tempPassword, 10);
 
   const user = await prisma.user.create({
     data: {
@@ -36,20 +37,21 @@ export async function createUser(data) {
       lastName,
       email,
       phone,
-      roles: validated.roles,
       department: validated.department,
+      roles: validated.roles,
       username,
       passwordHash,
+      mustResetPassword: true, // ⬅ important
+      status: "ACTIVE",
     },
   });
 
   return {
     id: user.id,
-    tenantId: user.tenantId,
     email: user.email,
     username: user.username,
     roles: user.roles,
-    tempPassword, // return temp password (useful for hackathon testing)
+    tempPassword, // frontend shows this once
   };
 }
 

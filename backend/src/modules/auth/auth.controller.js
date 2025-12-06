@@ -2,15 +2,15 @@ import { loginUser } from "./auth.service.js";
 
 export async function handleLogin(req, res) {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res
         .status(400)
-        .json({ message: "Email and password are required" });
+        .json({ message: "Username and password are required" });
     }
 
-    const result = await loginUser(email, password);
+    const result = await loginUser(username, password);
 
     res.status(200).json({
       message: "Login successful",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Card,
@@ -11,23 +11,21 @@ import {
   Alert,
   Grid,
   Chip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
-import { useSelector } from "react-redux";
 
 export default function CreateUser() {
   const navigate = useNavigate();
-  const authUser = useSelector((state) => state.auth.user);
 
-  // Backend required fields
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
-    username: "",
-    password: "",
     department: "",
     status: "ACTIVE",
     roles: [],
@@ -35,26 +33,28 @@ export default function CreateUser() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [createdUser, setCreatedUser] = useState(null);
 
-  // Backend-safe Lists
   const ROLE_OPTIONS = [
     "ADMIN",
     "DOCTOR",
     "NURSE",
+    "PHARMACIST",
     "RECEPTIONIST",
-    "CHEMIST",
     "ACCOUNTANT",
   ];
-
   const DEPARTMENT_OPTIONS = [
     "ADMINISTRATION",
     "CARDIOLOGY",
+    "DERMATOLOGY",
     "ORTHOPEDICS",
     "PEDIATRICS",
-    "GENERAL",
-    "NURSING",
+    "RADIOLOGY",
+    "NEUROLOGY",
+    "GENERAL_MEDICINE",
+    "EMERGENCY",
+    "OPHTHALMOLOGY",
   ];
-
   const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "LOCKED"];
 
   const handleChange = (e) =>
@@ -69,26 +69,17 @@ export default function CreateUser() {
     }));
   };
 
-  const generatePassword = () => {
-    const random = Math.random().toString(36).slice(-8);
-    setForm((prev) => ({ ...prev, password: `Pass@${random}` }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const payload = {
-        ...form,
-        password: form.password || undefined, // backend will auto-generate if undefined
-      };
+      const res = await api.post("/users/create", form);
 
-      await api.post("/users/create", payload);
-      navigate("/users");
+      setCreatedUser(res?.data?.user); // contains username + tempPassword
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create staff user");
+      setError(err.response?.data?.message || "Failed to create staff member");
     } finally {
       setLoading(false);
     }
@@ -150,47 +141,17 @@ export default function CreateUser() {
                 />
               </Grid>
 
-              {/* USERNAME */}
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Username"
-                  name="username"
-                  value={form.username}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* PASSWORD + auto-generate */}
-              <Grid item xs={12} md={6}>
-                <Box className="flex gap-2 items-center">
-                  <TextField
-                    fullWidth
-                    label="Password (optional)"
-                    name="password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                  />
-                  <Button variant="outlined" onClick={generatePassword}>
-                    Auto
-                  </Button>
-                </Box>
-              </Grid>
-
               {/* DEPARTMENT */}
               <Grid item xs={12} md={6}>
                 <TextField
                   select
                   fullWidth
-                  required
                   label="Department"
                   name="department"
                   value={form.department}
                   onChange={handleChange}
                 >
-                  <MenuItem value="">Select</MenuItem>
+                  <MenuItem value="">Select Department</MenuItem>
                   {DEPARTMENT_OPTIONS.map((d) => (
                     <MenuItem key={d} value={d}>
                       {d}
@@ -267,6 +228,25 @@ export default function CreateUser() {
           </form>
         </CardContent>
       </Card>
+
+      {/* SUCCESS MODAL */}
+      <Dialog open={!!createdUser} onClose={() => navigate("/users")}>
+        <DialogTitle>User Created Successfully</DialogTitle>
+        <DialogContent>
+          <Typography>
+            <strong>Username:</strong> {createdUser?.username}
+          </Typography>
+          <Typography>
+            <strong>Temporary Password:</strong> {createdUser?.tempPassword}
+          </Typography>
+
+          <Box className="mt-4 flex justify-end">
+            <Button variant="contained" onClick={() => navigate("/users")}>
+              Done
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

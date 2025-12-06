@@ -4,6 +4,7 @@ const ALLOWED_ROLES = [
   "NURSE",
   "PHARMACIST",
   "RECEPTIONIST",
+  "ACCOUNTANT",
 ];
 
 const ALLOWED_DEPARTMENTS = [
@@ -18,14 +19,15 @@ const ALLOWED_DEPARTMENTS = [
   "OPHTHALMOLOGY",
 ];
 
+// Roles that MUST have a department
+const DEPARTMENT_REQUIRED_ROLES = ["DOCTOR", "NURSE"];
+
 export function validateUserInput({ roles, department }) {
-  if (!roles || roles.length === 0) {
+  if (!roles || !Array.isArray(roles) || roles.length === 0) {
     throw new Error("User must have at least one role");
   }
 
-  // Validate roles
   const normalizedRoles = roles.map((r) => r.toUpperCase());
-
   const invalidRoles = normalizedRoles.filter(
     (r) => !ALLOWED_ROLES.includes(r)
   );
@@ -34,27 +36,29 @@ export function validateUserInput({ roles, department }) {
     throw new Error(`Invalid roles: ${invalidRoles.join(", ")}`);
   }
 
-  // Department mandatory for doctor & nurse
-  if (normalizedRoles.includes("DOCTOR") || normalizedRoles.includes("NURSE")) {
-    if (!department) {
-      throw new Error("Department is required for DOCTOR or NURSE role");
-    }
+  const normalizedDept = department ? department.toUpperCase() : null;
 
-    const normalizedDept = department.toUpperCase();
+  // Check if any assigned role requires a department
+  const requiresDept = normalizedRoles.some((role) =>
+    DEPARTMENT_REQUIRED_ROLES.includes(role)
+  );
+
+  if (requiresDept) {
+    if (!normalizedDept) {
+      throw new Error(
+        `Department is required when assigning roles: ${DEPARTMENT_REQUIRED_ROLES.join(
+          ", "
+        )}`
+      );
+    }
 
     if (!ALLOWED_DEPARTMENTS.includes(normalizedDept)) {
       throw new Error(`Invalid department: ${department}`);
     }
-
-    return {
-      roles: normalizedRoles,
-      department: normalizedDept,
-    };
   }
 
-  // Department optional for other roles
   return {
     roles: normalizedRoles,
-    department: department ? department.toUpperCase() : null,
+    department: normalizedDept,
   };
 }

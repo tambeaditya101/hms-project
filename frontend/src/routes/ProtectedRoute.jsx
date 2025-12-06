@@ -7,6 +7,9 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   const token = useSelector((state) => state.auth.token);
 
   if (!token) return <Navigate to="/login" />;
+  if (user?.mustResetPassword && location.pathname !== "/reset-password") {
+    return <Navigate to="/reset-password" replace />;
+  }
 
   // If no roles defined → public authenticated route
   if (!allowedRoles || allowedRoles.length === 0) return children;

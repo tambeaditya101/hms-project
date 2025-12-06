@@ -21,7 +21,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,12 +32,16 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { username, password });
 
-      const { token, user } = res.data;
+      const { token, user, mustResetPassword } = res.data;
       dispatch(setCredentials({ token, user }));
 
-      navigate("/");
+      if (mustResetPassword) {
+        navigate("/reset-password");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -77,10 +81,11 @@ export default function Login() {
             <form onSubmit={handleLogin} className="space-y-4">
               <TextField
                 fullWidth
-                label="Email Address"
-                variant="outlined"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                label="Username"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
               />
 
               <TextField
