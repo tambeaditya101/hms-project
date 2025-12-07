@@ -13,7 +13,6 @@ import { logout } from "../../store/authSlice";
 export default function Topbar() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  console.log(user);
 
   const hospitalName = user?.tenantName || "Hospital Management System";
   const department = user?.department || "User";
