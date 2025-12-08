@@ -11,12 +11,9 @@ const ALLOWED_DEPARTMENTS = [
   "CARDIOLOGY",
   "DERMATOLOGY",
   "ORTHOPEDICS",
-  "PEDIATRICS",
   "RADIOLOGY",
   "NEUROLOGY",
   "GENERAL_MEDICINE",
-  "EMERGENCY",
-  "OPHTHALMOLOGY",
 ];
 
 // Roles that MUST have a department

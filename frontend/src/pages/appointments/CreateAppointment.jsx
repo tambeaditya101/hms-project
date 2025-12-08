@@ -47,8 +47,8 @@ export default function CreateAppointment() {
 
   const fetchDoctors = async () => {
     try {
-      const res = await api.get("/users", { params: { role: "DOCTOR" } });
-      setDoctors(res?.data?.users ?? []);
+      const res = await api.get("/users/doctors");
+      setDoctors(res?.data?.doctors);
     } catch (err) {
       console.error("Failed to load doctors", err);
       setDoctors([]);

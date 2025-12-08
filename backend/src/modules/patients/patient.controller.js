@@ -14,6 +14,7 @@ export async function handleCreatePatient(req, res) {
       address,
       emergencyContact,
       type,
+      doctorId,
     } = req.body;
 
     const patient = await createPatient({
@@ -28,6 +29,7 @@ export async function handleCreatePatient(req, res) {
       address,
       emergencyContact,
       type,
+      doctorId,
     });
 
     res.status(201).json({

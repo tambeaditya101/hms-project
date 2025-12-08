@@ -46,6 +46,8 @@ export default function AppointmentsList() {
   const fetchDoctors = async () => {
     try {
       const res = await api.get("/users", { params: { role: "DOCTOR" } });
+      console.log(res, "adiii");
+
       setDoctors(res?.data?.users ?? []);
     } catch (err) {
       console.error("Failed to load doctors", err);

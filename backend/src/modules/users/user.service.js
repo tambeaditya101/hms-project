@@ -86,3 +86,24 @@ export async function deleteUser(id) {
     where: { id },
   });
 }
+
+export async function getDoctors(tenantId) {
+  const doctors = await prisma.user.findMany({
+    where: {
+      tenantId,
+      roles: { has: "DOCTOR" }, // Array contains DOCTOR
+    },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      department: true,
+      username: true,
+      createdAt: true,
+    },
+  });
+
+  return doctors;
+}

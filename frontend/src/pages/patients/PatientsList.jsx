@@ -65,31 +65,56 @@ export default function PatientsList() {
       field: "name",
       headerName: "Patient Name",
       flex: 1,
-      valueGetter: (params) =>
-        `${params?.row?.firstName || ""} ${params?.row?.lastName || ""}`.trim(),
+      renderCell: (params) => {
+        const f = params.row?.firstName || "";
+        const l = params.row?.lastName || "";
+        const fullName = `${f} ${l}`.trim();
+        return fullName || "—";
+      },
     },
-    { field: "patientUid", headerName: "Patient UID", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "type", headerName: "Type", width: 120 },
+    {
+      field: "patientUid",
+      headerName: "Patient UID",
+      flex: 1,
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      width: 120,
+    },
     {
       field: "doctorName",
       headerName: "Doctor",
       flex: 1,
-      valueGetter: (params) =>
-        params?.row?.doctor
-          ? `${params?.row?.doctor?.firstName || ""} ${
-              params?.row?.doctor?.lastName || ""
-            }`.trim()
-          : "—",
+      renderCell: (params) => {
+        const doctor = params.row?.doctor;
+        if (!doctor) return "—";
+        const f = doctor.firstName || "";
+        const l = doctor.lastName || "";
+        const fullName = `${f} ${l}`.trim();
+        return fullName || "—";
+      },
     },
     {
       field: "createdAt",
       headerName: "Created",
       flex: 1,
-      valueGetter: (params) =>
-        params?.row?.createdAt
-          ? new Date(params?.row?.createdAt).toLocaleDateString()
-          : "—",
+      renderCell: (params) => {
+        const raw = params.row?.createdAt;
+        if (!raw) return "—";
+        const date = new Date(raw);
+        if (Number.isNaN(date.getTime())) return "—";
+        return date.toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      },
     },
     {
       field: "actions",
@@ -100,7 +125,7 @@ export default function PatientsList() {
           variant="contained"
           size="small"
           onClick={() => {
-            if (params?.row?.id) navigate(`/patients/${params?.row?.id}`);
+            if (params.row?.id) navigate(`/patients/${params.row.id}`);
           }}
         >
           View

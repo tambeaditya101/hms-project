@@ -8,6 +8,7 @@ import {
   handleGetUsers,
   handleUpdateUser,
   handleDeleteUser,
+  handleGetDoctors,
 } from "./user.controller.js";
 
 const router = Router();
@@ -46,6 +47,14 @@ router.delete(
   enforceTenantAccess,
   authorizeRoles("ADMIN"),
   handleDeleteUser
+);
+
+router.get(
+  "/doctors",
+  authenticate,
+  enforceTenantAccess,
+  authorizeRoles("ADMIN", "RECEPTIONIST", "NURSE", "DOCTOR"),
+  handleGetDoctors
 );
 
 export default router;

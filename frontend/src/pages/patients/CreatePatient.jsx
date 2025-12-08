@@ -42,11 +42,13 @@ export default function CreatePatient() {
   // Fetch doctors
   const fetchDoctors = async () => {
     try {
-      const res = await api.get("/users", {
-        params: { role: "DOCTOR" },
-      });
+      const res = await api.get("/users");
+      const list = res?.data?.users ?? [];
 
-      setDoctors(res?.data?.users ?? []); // safe fallback
+      // Filter only users whose roles array contains "DOCTOR"
+      const doctorsOnly = list.filter((u) => u.roles?.includes("DOCTOR"));
+
+      setDoctors(doctorsOnly);
     } catch (err) {
       console.error("Failed to load doctors", err);
       setDoctors([]); // avoid undefined

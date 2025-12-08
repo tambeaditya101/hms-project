@@ -14,9 +14,9 @@ export async function createPatient(data) {
     address,
     emergencyContact,
     type,
+    doctorId,
   } = data;
 
-  // Generate patient UID
   const patientUid = `PAT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const patient = await prisma.patient.create({
@@ -33,7 +33,8 @@ export async function createPatient(data) {
       phone,
       address,
       emergencyContact,
-      type, // OPD / IPD
+      type,
+      doctorId, // <-- FIX: Now storing doctor assignment
     },
   });
 
@@ -43,9 +44,7 @@ export async function createPatient(data) {
 export async function getPatients(tenantId) {
   return prisma.patient.findMany({
     where: { tenantId },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     select: {
       id: true,
       patientUid: true,
@@ -57,6 +56,16 @@ export async function getPatients(tenantId) {
       type: true,
       doctorId: true,
       createdAt: true,
+      bloodGroup: true,
+      address: true,
+
+      // JOIN DOCTOR (USER)
+      doctor: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
     },
   });
 }

@@ -44,16 +44,12 @@ export default function CreateUser() {
     "ACCOUNTANT",
   ];
   const DEPARTMENT_OPTIONS = [
-    "ADMINISTRATION",
     "CARDIOLOGY",
     "DERMATOLOGY",
     "ORTHOPEDICS",
-    "PEDIATRICS",
     "RADIOLOGY",
     "NEUROLOGY",
     "GENERAL_MEDICINE",
-    "EMERGENCY",
-    "OPHTHALMOLOGY",
   ];
   const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "LOCKED"];
 

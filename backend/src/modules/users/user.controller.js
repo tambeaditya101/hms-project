@@ -1,4 +1,9 @@
-import { createUser, getUsers, updateUser } from "./user.service.js";
+import {
+  createUser,
+  getDoctors,
+  getUsers,
+  updateUser,
+} from "./user.service.js";
 
 export async function handleCreateUser(req, res) {
   try {
@@ -66,5 +71,18 @@ export async function handleDeleteUser(req, res) {
   } catch (err) {
     console.error("Delete user error:", err);
     res.status(500).json({ message: err.message });
+  }
+}
+
+export async function handleGetDoctors(req, res) {
+  try {
+    const tenantId = req.tenantId;
+
+    const doctors = await getDoctors(tenantId);
+
+    res.status(200).json({ doctors });
+  } catch (error) {
+    console.error("Get doctors error:", error);
+    res.status(400).json({ message: error.message });
   }
 }

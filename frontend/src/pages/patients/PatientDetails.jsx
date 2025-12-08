@@ -64,6 +64,7 @@ export default function PatientDetails() {
     if (id) fetchData();
   }, [id]);
 
+  console.log(patient, "adii-pat");
   if (loading)
     return (
       <Box className="flex justify-center p-10">
