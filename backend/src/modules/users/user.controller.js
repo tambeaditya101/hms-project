@@ -1,5 +1,6 @@
 import {
   createUser,
+  deleteUser,
   getDoctors,
   getUsers,
   updateUser,

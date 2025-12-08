@@ -37,3 +37,34 @@ export async function handleRegisterTenant(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
+import { getTenantById } from "./tenant.service.js";
+
+export async function handleGetTenant(req, res) {
+  try {
+    const { tenantId } = req.params;
+
+    if (!tenantId) {
+      return res.status(400).json({ message: "Tenant ID is required" });
+    }
+
+    const tenant = await getTenantById(tenantId);
+
+    res.json({
+      success: true,
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        address: tenant.address,
+        contactEmail: tenant.contactEmail,
+        contactPhone: tenant.contactPhone,
+        licenseNumber: tenant.licenseNumber,
+        status: tenant.status,
+        createdAt: tenant.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching tenant:", error);
+    res.status(404).json({ message: error.message });
+  }
+}

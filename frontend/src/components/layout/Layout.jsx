@@ -4,19 +4,19 @@ import Sidebar from "./Sidebar";
 
 export default function Layout() {
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
+    <div className="flex">
+      {/* FIXED SIDEBAR */}
       <Sidebar />
 
-      {/* Main area */}
-      <div className="flex-1 flex flex-col">
-        {/* Topbar */}
+      {/* MAIN AREA */}
+      <div className="flex-1 ml-64">
+        {/* FIXED TOP BAR */}
         <Topbar />
 
-        {/* Page Content */}
-        <div className="p-6 mt-16">
-          <Outlet /> {/* ← VERY IMPORTANT */}
-        </div>
+        {/* CONTENT */}
+        <main className="pt-20 p-6 min-h-screen bg-gray-50">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

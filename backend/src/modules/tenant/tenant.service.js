@@ -54,3 +54,13 @@ export async function registerTenant(data) {
 
   return result;
 }
+
+export async function getTenantById(tenantId) {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+  });
+
+  if (!tenant) throw new Error("Tenant not found");
+
+  return tenant;
+}

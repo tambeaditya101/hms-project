@@ -1,0 +1,19 @@
+export const ROLE_OPTIONS = [
+  "ADMIN",
+  "DOCTOR",
+  "NURSE",
+  "PHARMACIST",
+  "RECEPTIONIST",
+  "ACCOUNTANT",
+];
+
+export const DEPARTMENT_OPTIONS = [
+  "CARDIOLOGY",
+  "DERMATOLOGY",
+  "ORTHOPEDICS",
+  "RADIOLOGY",
+  "NEUROLOGY",
+  "GENERAL_MEDICINE",
+];
+
+export const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "LOCKED"];

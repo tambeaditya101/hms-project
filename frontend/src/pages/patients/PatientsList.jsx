@@ -10,6 +10,7 @@ import {
   TextField,
   CircularProgress,
   Grid,
+  Chip,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../utils/axios";
@@ -38,14 +39,12 @@ export default function PatientsList() {
       });
 
       const list = res?.data?.patients || [];
-
       setPatients(list);
 
-      // compute safe stats
       setStats({
-        total: list?.length || 0,
-        opd: list?.filter((p) => p?.type === "OPD")?.length || 0,
-        ipd: list?.filter((p) => p?.type === "IPD")?.length || 0,
+        total: list.length || 0,
+        opd: list.filter((p) => p?.type === "OPD").length || 0,
+        ipd: list.filter((p) => p?.type === "IPD").length || 0,
       });
     } catch (err) {
       console.error("Fetch patients error:", err);
@@ -56,10 +55,9 @@ export default function PatientsList() {
 
   useEffect(() => {
     fetchPatients();
-    // eslint-disable-next-line
   }, [search]);
 
-  // Columns
+  // Columns (SAFE VERSION)
   const columns = [
     {
       field: "name",
@@ -86,29 +84,35 @@ export default function PatientsList() {
       field: "type",
       headerName: "Type",
       width: 120,
+      renderCell: (params) => (
+        <Chip
+          label={params.row?.type ?? "—"}
+          color={params.row?.type === "OPD" ? "primary" : "secondary"}
+          size="small"
+        />
+      ),
     },
     {
       field: "doctorName",
       headerName: "Doctor",
       flex: 1,
-      renderCell: (params) => {
-        const doctor = params.row?.doctor;
-        if (!doctor) return "—";
-        const f = doctor.firstName || "";
-        const l = doctor.lastName || "";
-        const fullName = `${f} ${l}`.trim();
-        return fullName || "—";
+      valueGetter: (params) => {
+        const doc = params?.row?.doctor;
+        if (!doc) return "—";
+        const f = doc.firstName || "";
+        const l = doc.lastName || "";
+        return `${f} ${l}`.trim() || "—";
       },
     },
     {
       field: "createdAt",
       headerName: "Created",
       flex: 1,
-      renderCell: (params) => {
+      valueGetter: (params) => {
         const raw = params.row?.createdAt;
-        if (!raw) return "—";
         const date = new Date(raw);
         if (Number.isNaN(date.getTime())) return "—";
+
         return date.toLocaleDateString("en-IN", {
           year: "numeric",
           month: "short",
@@ -127,6 +131,7 @@ export default function PatientsList() {
           onClick={() => {
             if (params.row?.id) navigate(`/patients/${params.row.id}`);
           }}
+          className="!bg-blue-600 hover:!bg-blue-700"
         >
           View
         </Button>
@@ -143,7 +148,7 @@ export default function PatientsList() {
 
       {/* STATS CARDS */}
       <Grid container spacing={3} className="mb-6">
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             className="shadow-md"
             style={{
@@ -154,13 +159,13 @@ export default function PatientsList() {
             <CardContent>
               <Typography variant="h6">Total Patients</Typography>
               <Typography variant="h3" className="font-bold">
-                {stats?.total ?? 0}
+                {stats.total}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             className="shadow-md"
             style={{
@@ -171,13 +176,13 @@ export default function PatientsList() {
             <CardContent>
               <Typography variant="h6">OPD Patients</Typography>
               <Typography variant="h3" className="font-bold">
-                {stats?.opd ?? 0}
+                {stats.opd}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             className="shadow-md"
             style={{
@@ -188,7 +193,7 @@ export default function PatientsList() {
             <CardContent>
               <Typography variant="h6">IPD Patients</Typography>
               <Typography variant="h3" className="font-bold">
-                {stats?.ipd ?? 0}
+                {stats.ipd}
               </Typography>
             </CardContent>
           </Card>
@@ -229,9 +234,9 @@ export default function PatientsList() {
               rows={patients ?? []}
               columns={columns}
               autoHeight
-              pageSizeOptions={[5, 10, 20]}
+              pageSizeOptions={[5, 10, 20, 50, 100]} // FIXED WARNING
               disableRowSelectionOnClick
-              getRowId={(row) => row?.id || Math.random()} // safe fallback
+              getRowId={(row) => row?.id || `fallback-${Math.random()}`}
             />
           )}
         </CardContent>

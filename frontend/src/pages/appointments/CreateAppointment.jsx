@@ -1,4 +1,5 @@
 // src/pages/appointments/CreateAppointment.jsx
+
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
+import { TIME_SLOTS } from "../../constants/timeSlots";
 
 export default function CreateAppointment() {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export default function CreateAppointment() {
   const [error, setError] = useState("");
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target?.name]: e.target?.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const fetchPatients = async () => {
     try {
@@ -48,7 +50,7 @@ export default function CreateAppointment() {
   const fetchDoctors = async () => {
     try {
       const res = await api.get("/users/doctors");
-      setDoctors(res?.data?.doctors);
+      setDoctors(res?.data?.doctors ?? []);
     } catch (err) {
       console.error("Failed to load doctors", err);
       setDoctors([]);
@@ -89,95 +91,101 @@ export default function CreateAppointment() {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               {/* PATIENT */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   select
                   fullWidth
                   label="Patient"
                   name="patientId"
-                  value={form?.patientId ?? ""}
+                  value={form.patientId}
                   onChange={handleChange}
                   required
                 >
                   <MenuItem value="">Select Patient</MenuItem>
-                  {(patients ?? []).map((p) => (
-                    <MenuItem key={p?.id} value={p?.id}>
-                      {`${p?.firstName ?? ""} ${p?.lastName ?? ""} (${
-                        p?.patientUid ?? ""
-                      })`}
+                  {patients.map((p) => (
+                    <MenuItem key={p.id} value={p.id}>
+                      {`${p.firstName} ${p.lastName} (${p.patientUid})`}
                     </MenuItem>
                   ))}
                 </TextField>
               </Grid>
 
               {/* DOCTOR */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   select
                   fullWidth
                   label="Doctor"
                   name="doctorId"
-                  value={form?.doctorId ?? ""}
+                  value={form.doctorId}
                   onChange={handleChange}
                   required
                 >
                   <MenuItem value="">Select Doctor</MenuItem>
-                  {(doctors ?? []).map((d) => (
-                    <MenuItem key={d?.id} value={d?.id}>
-                      {`${d?.firstName ?? ""} ${d?.lastName ?? ""}`}
+                  {doctors.map((d) => (
+                    <MenuItem key={d.id} value={d.id}>
+                      {`${d.firstName} ${d.lastName}`}
                     </MenuItem>
                   ))}
                 </TextField>
               </Grid>
 
               {/* DATE */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   type="date"
                   label="Date"
                   name="date"
                   InputLabelProps={{ shrink: true }}
-                  value={form?.date ?? ""}
+                  value={form.date}
                   onChange={handleChange}
                   required
                 />
               </Grid>
 
               {/* TIME */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
+                  select
                   fullWidth
-                  label="Time (e.g. 10:00 AM)"
+                  label="Time Slot"
                   name="time"
-                  value={form?.time ?? ""}
+                  value={form.time}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <MenuItem value="">Select Time Slot</MenuItem>
+                  {TIME_SLOTS.map((slot) => (
+                    <MenuItem key={slot.value} value={slot.value}>
+                      {slot.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
 
               {/* REASON */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   multiline
                   rows={3}
                   label="Reason / Notes"
                   name="reason"
-                  value={form?.reason ?? ""}
+                  value={form.reason}
                   onChange={handleChange}
                 />
               </Grid>
 
               {/* ERROR */}
               {error && (
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Alert severity="error">{error}</Alert>
                 </Grid>
               )}
 
               {/* BUTTONS */}
-              <Grid item xs={12} className="mt-4 flex gap-4">
+              <Grid size={{ xs: 12 }} className="mt-4 flex gap-4">
                 <Button
                   type="submit"
                   variant="contained"

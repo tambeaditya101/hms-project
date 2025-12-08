@@ -1,4 +1,5 @@
 // src/pages/patients/CreatePatient.jsx
+
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -37,21 +38,15 @@ export default function CreatePatient() {
   const [error, setError] = useState("");
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target?.name]: e.target?.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Fetch doctors
   const fetchDoctors = async () => {
     try {
       const res = await api.get("/users");
       const list = res?.data?.users ?? [];
-
-      // Filter only users whose roles array contains "DOCTOR"
-      const doctorsOnly = list.filter((u) => u.roles?.includes("DOCTOR"));
-
-      setDoctors(doctorsOnly);
-    } catch (err) {
-      console.error("Failed to load doctors", err);
-      setDoctors([]); // avoid undefined
+      setDoctors(list.filter((u) => u.roles?.includes("DOCTOR")));
+    } catch {
+      setDoctors([]);
     }
   };
 
@@ -85,49 +80,49 @@ export default function CreatePatient() {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               {/* FIRST NAME */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   label="First Name"
                   name="firstName"
-                  value={form?.firstName ?? ""}
+                  value={form.firstName}
                   onChange={handleChange}
                   required
                 />
               </Grid>
 
               {/* LAST NAME */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   label="Last Name"
                   name="lastName"
-                  value={form?.lastName ?? ""}
+                  value={form.lastName}
                   onChange={handleChange}
                 />
               </Grid>
 
               {/* DOB */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   type="date"
                   label="Date of Birth"
                   name="dob"
                   InputLabelProps={{ shrink: true }}
-                  value={form?.dob ?? ""}
+                  value={form.dob}
                   onChange={handleChange}
                 />
               </Grid>
 
               {/* GENDER */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   select
                   fullWidth
                   label="Gender"
                   name="gender"
-                  value={form?.gender ?? ""}
+                  value={form.gender}
                   onChange={handleChange}
                 >
                   <MenuItem value="">Select</MenuItem>
@@ -138,13 +133,13 @@ export default function CreatePatient() {
               </Grid>
 
               {/* BLOOD GROUP */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   select
                   fullWidth
                   label="Blood Group"
                   name="bloodGroup"
-                  value={form?.bloodGroup ?? ""}
+                  value={form.bloodGroup}
                   onChange={handleChange}
                 >
                   <MenuItem value="">Select</MenuItem>
@@ -159,13 +154,13 @@ export default function CreatePatient() {
               </Grid>
 
               {/* TYPE */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   select
                   fullWidth
                   label="Patient Type"
                   name="type"
-                  value={form?.type ?? "OPD"}
+                  value={form.type}
                   onChange={handleChange}
                 >
                   <MenuItem value="OPD">OPD</MenuItem>
@@ -174,55 +169,54 @@ export default function CreatePatient() {
               </Grid>
 
               {/* ASSIGN DOCTOR */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   select
                   fullWidth
                   label="Assign Doctor"
                   name="doctorId"
-                  value={form?.doctorId ?? ""}
+                  value={form.doctorId}
                   onChange={handleChange}
                   required
                 >
                   <MenuItem value="">Select Doctor</MenuItem>
-
-                  {(doctors ?? []).map((doc) => (
-                    <MenuItem key={doc?.id} value={doc?.id}>
-                      {`${doc?.firstName ?? ""} ${doc?.lastName ?? ""}`}
+                  {doctors.map((doc) => (
+                    <MenuItem key={doc.id} value={doc.id}>
+                      {`${doc.firstName} ${doc.lastName}`}
                     </MenuItem>
                   ))}
                 </TextField>
               </Grid>
 
-              {/* CONTACT PHONE */}
-              <Grid item xs={12} md={6}>
+              {/* PHONE */}
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   label="Phone"
                   name="phone"
-                  value={form?.phone ?? ""}
+                  value={form.phone}
                   onChange={handleChange}
                 />
               </Grid>
 
               {/* EMAIL */}
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   label="Email"
                   name="email"
-                  value={form?.email ?? ""}
+                  value={form.email}
                   onChange={handleChange}
                 />
               </Grid>
 
               {/* ADDRESS */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Address"
                   name="address"
-                  value={form?.address ?? ""}
+                  value={form.address}
                   onChange={handleChange}
                   multiline
                   rows={2}
@@ -230,25 +224,25 @@ export default function CreatePatient() {
               </Grid>
 
               {/* EMERGENCY CONTACT */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   label="Emergency Contact"
                   name="emergencyContact"
-                  value={form?.emergencyContact ?? ""}
+                  value={form.emergencyContact}
                   onChange={handleChange}
                 />
               </Grid>
 
-              {/* ERROR BOX */}
+              {/* ERROR */}
               {error && (
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Alert severity="error">{error}</Alert>
                 </Grid>
               )}
 
               {/* BUTTONS */}
-              <Grid item xs={12} className="mt-4 flex gap-4">
+              <Grid size={{ xs: 12 }} className="mt-4 flex gap-4">
                 <Button
                   variant="contained"
                   type="submit"

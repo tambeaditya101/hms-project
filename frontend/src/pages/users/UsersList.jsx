@@ -8,7 +8,6 @@ import {
   TextField,
   MenuItem,
   Button,
-  Grid,
   CircularProgress,
   Chip,
   Avatar,
@@ -39,7 +38,6 @@ export default function UsersList() {
     "CHEMIST",
     "ACCOUNTANT",
   ];
-
   const DEPARTMENTS = [
     "ADMINISTRATION",
     "CARDIOLOGY",
@@ -49,7 +47,6 @@ export default function UsersList() {
     "NURSING",
   ];
 
-  // Chip Color Mappings
   const ROLE_COLORS = {
     ADMIN: "primary",
     DOCTOR: "success",
@@ -82,10 +79,9 @@ export default function UsersList() {
     fetchUsers();
   }, []);
 
-  /** FILTERED LIST — useMemo for performance */
+  /** FILTERED LIST */
   const filteredUsers = useMemo(() => {
     let list = [...users];
-
     const q = filters.search.toLowerCase();
 
     if (filters.search) {
@@ -113,8 +109,8 @@ export default function UsersList() {
       flex: 1.5,
       sortable: false,
       renderCell: (params) => {
-        const f = params.row?.firstName ?? "";
-        const l = params.row?.lastName ?? "";
+        const f = params.row.firstName ?? "";
+        const l = params.row.lastName ?? "";
         const initials = `${f[0] ?? ""}${l[0] ?? ""}`.toUpperCase();
 
         return (
@@ -131,7 +127,7 @@ export default function UsersList() {
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        const roles = params.row?.roles ?? [];
+        const roles = params.row.roles ?? [];
         if (roles.length === 0) return "—";
 
         return (
@@ -156,8 +152,8 @@ export default function UsersList() {
       renderCell: (params) => (
         <Chip
           label={params.row?.department ?? "—"}
-          color="info"
           variant="outlined"
+          color="info"
           size="small"
         />
       ),
@@ -167,7 +163,7 @@ export default function UsersList() {
       headerName: "Status",
       width: 140,
       renderCell: (params) => {
-        const status = params.row?.status ?? "UNKNOWN";
+        const status = params.row.status ?? "UNKNOWN";
         return (
           <Chip
             label={status}
@@ -186,7 +182,7 @@ export default function UsersList() {
           variant="contained"
           size="small"
           className="!bg-blue-600 hover:!bg-blue-700"
-          onClick={() => navigate(`/users/${p.row?.id}`)}
+          onClick={() => navigate(`/users/${p.row.id}`)}
         >
           View
         </Button>
@@ -194,95 +190,80 @@ export default function UsersList() {
     },
   ];
 
-  /** INPUT HANDLER */
-  const setField = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
-  };
-
   return (
-    <Box className="p-6">
-      <Typography variant="h4" fontWeight="bold" mb={4}>
+    <Box className="p-6 space-y-6">
+      <Typography variant="h4" fontWeight="bold">
         Staff Management
       </Typography>
 
-      {/* FILTER CARD */}
-      <Card className="shadow-lg mb-6">
+      {/* FILTERS CARD */}
+      <Card className="shadow-lg">
         <CardContent>
-          <Grid container spacing={3}>
+          <Box className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {/* SEARCH */}
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                label="Search by name"
-                value={filters.search}
-                onChange={(e) => setField("search", e.target.value)}
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="Search by name"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters({ ...filters, search: e.target.value })
+              }
+            />
 
             {/* ROLE FILTER */}
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                select
-                value={filters.role || ""}
-                onChange={(e) => setField("role", e.target.value)}
-                placeholder="Filter by Role"
-                SelectProps={{
-                  displayEmpty: true,
-                  renderValue: (selected) => {
-                    if (!selected || selected === "") {
-                      return (
-                        <span style={{ color: "#9e9e9e" }}>Filter by Role</span>
-                      );
-                    }
-                    return selected;
-                  },
-                }}
-              >
-                <MenuItem value="">All</MenuItem>
-                {ROLES.map((role) => (
-                  <MenuItem key={role} value={role}>
-                    {role}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+            <TextField
+              fullWidth
+              select
+              value={filters.role}
+              onChange={(e) => setFilters({ ...filters, role: e.target.value })}
+              SelectProps={{
+                displayEmpty: true,
+                renderValue: (val) =>
+                  val ? (
+                    val
+                  ) : (
+                    <span className="text-gray-400">Filter by Role</span>
+                  ),
+              }}
+            >
+              <MenuItem value="">All</MenuItem>
+              {ROLES.map((r) => (
+                <MenuItem key={r} value={r}>
+                  {r}
+                </MenuItem>
+              ))}
+            </TextField>
 
-            {/* DEPT FILTER */}
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                select
-                value={filters.department || ""}
-                onChange={(e) => setField("department", e.target.value)}
-                placeholder="Filter by Department"
-                SelectProps={{
-                  displayEmpty: true,
-                  renderValue: (selected) => {
-                    if (!selected || selected === "") {
-                      return (
-                        <span style={{ color: "#9e9e9e" }}>
-                          Filter by Department
-                        </span>
-                      );
-                    }
-                    return selected;
-                  },
-                }}
-              >
-                <MenuItem value="">All</MenuItem>
-                {DEPARTMENTS.map((d) => (
-                  <MenuItem key={d} value={d}>
-                    {d}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
+            {/* DEPARTMENT FILTER */}
+            <TextField
+              fullWidth
+              select
+              value={filters.department}
+              onChange={(e) =>
+                setFilters({ ...filters, department: e.target.value })
+              }
+              SelectProps={{
+                displayEmpty: true,
+                renderValue: (val) =>
+                  val ? (
+                    val
+                  ) : (
+                    <span className="text-gray-400">Filter by Department</span>
+                  ),
+              }}
+            >
+              <MenuItem value="">All</MenuItem>
+              {DEPARTMENTS.map((d) => (
+                <MenuItem key={d} value={d}>
+                  {d}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
 
-          {/* Add User Button */}
+          {/* ADD USER BUTTON */}
           {user?.roles?.includes("ADMIN") && (
-            <Box display="flex" justifyContent="flex-end" mt={3}>
+            <Box className="flex justify-end">
               <Button
                 variant="contained"
                 className="!bg-blue-600 hover:!bg-blue-700"
@@ -303,15 +284,15 @@ export default function UsersList() {
               <CircularProgress />
             </Box>
           ) : filteredUsers.length === 0 ? (
-            <Box textAlign="center" py={8} color="gray">
+            <Box className="text-center py-8 text-gray-500">
               <Typography>No staff members found.</Typography>
             </Box>
           ) : (
             <DataGrid
               rows={filteredUsers}
               columns={columns}
-              getRowId={(row) => row.id}
               autoHeight
+              getRowId={(row) => row.id}
               disableRowSelectionOnClick
               sx={{
                 "& .MuiDataGrid-row:hover": {
