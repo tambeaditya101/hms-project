@@ -13,10 +13,10 @@ import {
   Alert,
   Chip,
   Avatar,
-  Stack,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../utils/axios";
+import { formatDate } from "../../utils/formatDate";
 
 export default function PatientDetails() {
   const { id } = useParams();
@@ -30,22 +30,29 @@ export default function PatientDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /** Fetch Everything */
   const fetchData = async () => {
     try {
-      const res = await api.get("/patients", { params: { id } });
-      const list = res?.data?.patients ?? [];
-      const pat = list.find((p) => p.id === id);
+      setLoading(true);
 
+      // Patient
+      const pRes = await api.get("/patients", { params: { id } });
+      const pat = pRes.data.patients.find((p) => p.id === id);
       setPatient(pat);
 
-      const ap = await api.get("/appointments", { params: { patientId: id } });
-      setAppointments(ap?.data?.appointments ?? []);
+      // Appointments
+      const apRes = await api.get("/appointments", {
+        params: { patientId: id },
+      });
+      setAppointments(apRes.data.appointments ?? []);
 
-      const pr = await api.get(`/prescriptions/patient/${id}`);
-      setPrescriptions(pr?.data?.prescriptions ?? []);
+      // Prescriptions
+      const prRes = await api.get(`/prescriptions/patient/${id}`);
+      setPrescriptions(prRes.data.prescriptions ?? []);
 
-      const bl = await api.get(`/billing/patient/${id}`);
-      setBills(bl?.data?.bills ?? []);
+      // Bills
+      const blRes = await api.get(`/billing/patient/${id}`);
+      setBills(blRes.data.bills ?? []);
     } catch (err) {
       console.error(err);
       setError("Failed to load patient details");
@@ -58,13 +65,15 @@ export default function PatientDetails() {
     if (id) fetchData();
   }, [id]);
 
+  /** Loading State */
   if (loading)
     return (
-      <Box className="flex justify-center min-h-[300px]">
+      <Box className="flex justify-center min-h-[300px] p-10">
         <CircularProgress />
       </Box>
     );
 
+  /** Error State */
   if (error || !patient)
     return (
       <Box className="p-6">
@@ -72,20 +81,28 @@ export default function PatientDetails() {
       </Box>
     );
 
+  /** ---------------- Appointment Columns ---------------- */
   const appointmentCols = [
-    { field: "date", headerName: "Date", width: 140 },
-    { field: "time", headerName: "Time", width: 120 },
+    {
+      field: "date",
+      headerName: "Date",
+      width: 140,
+      valueGetter: (p) => formatDate(p.row?.date),
+    },
+    { field: "time", headerName: "Time", width: 110 },
     {
       field: "doctor",
       headerName: "Doctor",
       flex: 1,
       valueGetter: (p) =>
-        `${p.row?.doctor?.firstName ?? ""} ${p.row?.doctor?.lastName ?? ""}`,
+        `${p.row?.doctor?.firstName ?? ""} ${
+          p.row?.doctor?.lastName ?? ""
+        }`.trim(),
     },
     {
       field: "status",
       headerName: "Status",
-      width: 150,
+      width: 140,
       renderCell: (p) => (
         <Chip
           label={p.row.status}
@@ -101,8 +118,9 @@ export default function PatientDetails() {
     },
   ];
 
+  /** ---------------- Prescription Columns ---------------- */
   const prescriptionCols = [
-    { field: "prescriptionUid", headerName: "Rx ID", width: 150 },
+    { field: "prescriptionUid", headerName: "Rx ID", width: 160 },
     {
       field: "notes",
       headerName: "Notes",
@@ -112,15 +130,23 @@ export default function PatientDetails() {
     {
       field: "doctor",
       headerName: "Doctor",
-      width: 200,
+      width: 180,
       valueGetter: (p) =>
-        `${p.row?.doctor?.firstName ?? ""} ${p.row?.doctor?.lastName ?? ""}`,
+        `${p.row?.doctor?.firstName ?? ""} ${
+          p.row?.doctor?.lastName ?? ""
+        }`.trim(),
     },
-    { field: "createdAt", headerName: "Date", width: 150 },
+    {
+      field: "createdAt",
+      headerName: "Date",
+      width: 150,
+      valueGetter: (p) => formatDate(p.row?.createdAt),
+    },
   ];
 
+  /** ---------------- Billing Columns ---------------- */
   const billCols = [
-    { field: "id", headerName: "Bill ID", width: 150 },
+    { field: "id", headerName: "Bill ID", width: 160 },
     { field: "totalAmount", headerName: "Total", width: 120 },
     { field: "paidAmount", headerName: "Paid", width: 120 },
     { field: "dueAmount", headerName: "Due", width: 120 },
@@ -151,8 +177,8 @@ export default function PatientDetails() {
       </Typography>
 
       {/* PROFILE CARD */}
-      <Card sx={{ mb: 4, borderRadius: 3 }}>
-        <CardContent sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+      <Card sx={{ borderRadius: 3, mb: 4 }}>
+        <CardContent sx={{ display: "flex", gap: 3, alignItems: "center" }}>
           <Avatar
             sx={{
               width: 80,
@@ -173,7 +199,6 @@ export default function PatientDetails() {
             <Typography variant="body2" color="text.secondary">
               {patient.patientUid}
             </Typography>
-
             <Chip
               label={patient.type}
               color={patient.type === "OPD" ? "primary" : "secondary"}
@@ -183,26 +208,21 @@ export default function PatientDetails() {
         </CardContent>
       </Card>
 
-      {/* DETAILS SECTION */}
-      <Card sx={{ mb: 4, borderRadius: 3 }}>
+      {/* DETAILS CARD */}
+      <Card sx={{ borderRadius: 3, mb: 4 }}>
         <CardContent>
           <Grid container spacing={4}>
-            {/* LEFT COLUMN */}
+            {/* <Grid item xs={12} md={6}> */}
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h6" fontWeight="600" mb={2}>
-                Basic Information
-              </Typography>
+              <SectionHeader>Basic Information</SectionHeader>
               <Detail label="Phone" value={patient.phone} />
               <Detail label="Email" value={patient.email} />
               <Detail label="Gender" value={patient.gender} />
-              <Detail label="DOB" value={patient.dob || "—"} />
+              <Detail label="DOB" value={formatDate(patient.dob)} />
             </Grid>
 
-            {/* RIGHT COLUMN */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h6" fontWeight="600" mb={2}>
-                Medical Information
-              </Typography>
+            <Grid item xs={12} md={6}>
+              <SectionHeader>Medical Information</SectionHeader>
               <Detail
                 label="Doctor"
                 value={
@@ -230,7 +250,7 @@ export default function PatientDetails() {
         <CardContent>
           {tab === 0 && (
             <>
-              <SectionTitle title="Appointment History" />
+              <SectionHeader>Appointment History</SectionHeader>
               <DataGrid
                 rows={appointments}
                 columns={appointmentCols}
@@ -242,7 +262,7 @@ export default function PatientDetails() {
 
           {tab === 1 && (
             <>
-              <SectionTitle title="Prescriptions" />
+              <SectionHeader>Prescriptions</SectionHeader>
               <DataGrid
                 rows={prescriptions}
                 columns={prescriptionCols}
@@ -254,7 +274,7 @@ export default function PatientDetails() {
 
           {tab === 2 && (
             <>
-              <SectionTitle title="Bills" />
+              <SectionHeader>Bills</SectionHeader>
               <DataGrid
                 rows={bills}
                 columns={billCols}
@@ -269,24 +289,25 @@ export default function PatientDetails() {
   );
 }
 
-/* Reusable Detail Component */
+/* ---------- Reusable Components ---------- */
+
 function Detail({ label, value }) {
   return (
-    <Box mb={1.5}>
+    <Box mb={2}>
       <Typography variant="caption" color="text.secondary">
         {label}
       </Typography>
       <Typography variant="body1" fontWeight="500">
-        {value ?? "—"}
+        {value || "—"}
       </Typography>
     </Box>
   );
 }
 
-function SectionTitle({ title }) {
+function SectionHeader({ children }) {
   return (
-    <Typography variant="h6" className="mb-3 font-semibold">
-      {title}
+    <Typography variant="h6" fontWeight="600" mb={2}>
+      {children}
     </Typography>
   );
 }

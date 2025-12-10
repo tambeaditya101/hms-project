@@ -71,6 +71,10 @@ export async function getPatients(tenantId, filters) {
       type: true,
       doctorId: true,
       createdAt: true,
+      email: true,
+      bloodGroup: true,
+      dob: true,
+      address: true,
       doctor: {
         select: { firstName: true, lastName: true },
       },

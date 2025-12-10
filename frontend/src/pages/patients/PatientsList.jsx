@@ -16,6 +16,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils/formatDate";
 
 export default function PatientsList() {
   const navigate = useNavigate();
@@ -122,15 +123,7 @@ export default function PatientsList() {
       valueGetter: (params) => {
         const raw = params;
         if (!raw) return "—";
-
-        const date = new Date(raw);
-        if (isNaN(date.getTime())) return "—";
-
-        return date.toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
+        return formatDate(raw);
       },
     },
     {
