@@ -17,6 +17,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
 import { hasRole } from "../../utils/permissions";
+import { formatDate } from "../../utils/formatDate";
+import { formatTime } from "../../utils/formatTime";
 
 export default function AppointmentsList() {
   const navigate = useNavigate();
@@ -73,6 +75,8 @@ export default function AppointmentsList() {
 
       const list = res?.data?.appointments ?? [];
       setAppointments(list);
+      console.log(list, "adii");
+
       computeStats(list);
     } catch (err) {
       console.error("Failed to load appointments", err);
@@ -128,9 +132,8 @@ export default function AppointmentsList() {
         headerName: "Patient",
         flex: 1,
         valueGetter: (p) => {
-          const pt = p?.row?.patient;
-          if (!pt) return "—";
-          return `${pt.firstName ?? ""} ${pt.lastName ?? ""}`.trim();
+          if (!p) return "—";
+          return `${p.firstName ?? ""} ${p.lastName ?? ""}`.trim();
         },
       },
       {
@@ -138,23 +141,21 @@ export default function AppointmentsList() {
         headerName: "Doctor",
         flex: 1,
         valueGetter: (p) => {
-          const d = p?.row?.doctor;
-          if (!d) return "—";
-          return `${d.firstName ?? ""} ${d.lastName ?? ""}`.trim();
+          if (!p) return "—";
+          return `${p.firstName ?? ""} ${p.lastName ?? ""}`.trim();
         },
       },
       {
         field: "date",
         headerName: "Date",
         width: 150,
-        valueGetter: (p) =>
-          p?.row?.date ? new Date(p.row.date).toLocaleDateString() : "—",
+        valueGetter: (p) => formatDate(p),
       },
       {
         field: "time",
         headerName: "Time",
         width: 120,
-        valueGetter: (p) => p?.row?.time ?? "—",
+        valueGetter: (p) => formatTime(p) ?? "—",
       },
       {
         field: "status",
@@ -177,7 +178,7 @@ export default function AppointmentsList() {
         field: "reason",
         headerName: "Reason",
         flex: 1,
-        valueGetter: (p) => p?.row?.reason ?? "—",
+        valueGetter: (p) => p ?? "—",
       },
     ],
     []

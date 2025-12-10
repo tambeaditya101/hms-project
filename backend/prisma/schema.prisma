@@ -48,6 +48,8 @@ model User {
   patients           Patient[]      @relation("DoctorPatients")
   prescriptions      Prescription[]
   doctorAppointments Appointment[]  @relation("DoctorAppointments")
+  @@unique([email, tenantId])
+
 }
 
 model Patient {
