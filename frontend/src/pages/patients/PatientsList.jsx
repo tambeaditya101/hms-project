@@ -6,11 +6,12 @@ import {
   Card,
   CardContent,
   Typography,
-  Button,
   TextField,
+  Button,
   CircularProgress,
   Grid,
   Chip,
+  MenuItem,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import api from "../../utils/axios";
@@ -22,6 +23,7 @@ export default function PatientsList() {
 
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [type, setType] = useState(""); // OPD / IPD
 
   const [search, setSearch] = useState("");
   const [stats, setStats] = useState({
@@ -30,21 +32,21 @@ export default function PatientsList() {
     ipd: 0,
   });
 
-  // Fetch patients
+  /** Fetch Patients from backend */
   const fetchPatients = async () => {
     setLoading(true);
     try {
       const res = await api.get("/patients", {
-        params: { search },
+        params: { search, type },
       });
 
       const list = res?.data?.patients || [];
       setPatients(list);
 
       setStats({
-        total: list.length || 0,
-        opd: list.filter((p) => p?.type === "OPD").length || 0,
-        ipd: list.filter((p) => p?.type === "IPD").length || 0,
+        total: list.length,
+        opd: list.filter((p) => p?.type === "OPD").length,
+        ipd: list.filter((p) => p?.type === "IPD").length,
       });
     } catch (err) {
       console.error("Fetch patients error:", err);
@@ -54,53 +56,62 @@ export default function PatientsList() {
   };
 
   useEffect(() => {
-    fetchPatients();
-  }, [search]);
+    const t = setTimeout(() => {
+      fetchPatients();
+    }, 300);
 
-  // Columns (SAFE VERSION)
+    return () => clearTimeout(t);
+  }, [search, type]);
+
+  /** COLUMNS – Safe */
   const columns = [
     {
       field: "name",
       headerName: "Patient Name",
       flex: 1,
       renderCell: (params) => {
-        const f = params.row?.firstName || "";
-        const l = params.row?.lastName || "";
-        const fullName = `${f} ${l}`.trim();
-        return fullName || "—";
+        if (!params?.row) return "—";
+        const f = params.row.firstName || "";
+        const l = params.row.lastName || "";
+        return `${f} ${l}`.trim() || "—";
       },
     },
     {
       field: "patientUid",
       headerName: "Patient UID",
       flex: 1,
+      valueGetter: (params) => params ?? "-",
     },
     {
       field: "phone",
       headerName: "Phone",
       flex: 1,
+      valueGetter: (params) => params ?? "—",
     },
     {
       field: "type",
       headerName: "Type",
       width: 120,
-      renderCell: (params) => (
-        <Chip
-          label={params.row?.type ?? "—"}
-          color={params.row?.type === "OPD" ? "primary" : "secondary"}
-          size="small"
-        />
-      ),
+      renderCell: (params) => {
+        const type = params?.row?.type ?? "—";
+        return (
+          <Chip
+            label={type}
+            color={type === "OPD" ? "primary" : "secondary"}
+            size="small"
+          />
+        );
+      },
     },
     {
-      field: "doctorName",
+      field: "doctor",
       headerName: "Doctor",
       flex: 1,
       valueGetter: (params) => {
-        const doc = params?.row?.doctor;
-        if (!doc) return "—";
-        const f = doc.firstName || "";
-        const l = doc.lastName || "";
+        console.log(params);
+
+        const f = params.firstName || "";
+        const l = params.lastName || "";
         return `${f} ${l}`.trim() || "—";
       },
     },
@@ -109,9 +120,11 @@ export default function PatientsList() {
       headerName: "Created",
       flex: 1,
       valueGetter: (params) => {
-        const raw = params.row?.createdAt;
+        const raw = params;
+        if (!raw) return "—";
+
         const date = new Date(raw);
-        if (Number.isNaN(date.getTime())) return "—";
+        if (isNaN(date.getTime())) return "—";
 
         return date.toLocaleDateString("en-IN", {
           year: "numeric",
@@ -128,10 +141,10 @@ export default function PatientsList() {
         <Button
           variant="contained"
           size="small"
-          onClick={() => {
-            if (params.row?.id) navigate(`/patients/${params.row.id}`);
-          }}
           className="!bg-blue-600 hover:!bg-blue-700"
+          onClick={() =>
+            params?.row?.id && navigate(`/patients/${params.row.id}`)
+          }
         >
           View
         </Button>
@@ -141,12 +154,12 @@ export default function PatientsList() {
 
   return (
     <Box className="p-6">
-      {/* PAGE TITLE */}
+      {/* TITLE */}
       <Typography variant="h4" className="font-bold mb-4">
         Patients Overview
       </Typography>
 
-      {/* STATS CARDS */}
+      {/* COLORFUL STATS (YOUR ORIGINAL STYLE) */}
       <Grid container spacing={3} className="mb-6">
         <Grid size={{ xs: 12, md: 4 }}>
           <Card
@@ -203,12 +216,23 @@ export default function PatientsList() {
       {/* SEARCH + ADD BUTTON */}
       <Box className="flex items-center justify-between mb-4">
         <TextField
-          label="Search Patients..."
+          label="Search Patients/Patient UID..."
           variant="outlined"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-1/3"
         />
+        <TextField
+          label="Type"
+          select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          sx={{ width: 180 }}
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value="OPD">OPD</MenuItem>
+          <MenuItem value="IPD">IPD</MenuItem>
+        </TextField>
 
         {(user?.roles?.includes("ADMIN") ||
           user?.roles?.includes("DOCTOR")) && (
@@ -231,12 +255,17 @@ export default function PatientsList() {
             </Box>
           ) : (
             <DataGrid
-              rows={patients ?? []}
+              rows={patients}
               columns={columns}
               autoHeight
-              pageSizeOptions={[5, 10, 20, 50, 100]} // FIXED WARNING
               disableRowSelectionOnClick
-              getRowId={(row) => row?.id || `fallback-${Math.random()}`}
+              pageSizeOptions={[5, 10, 20, 50, 100]}
+              getRowId={(row) => row.id || `row-${Math.random()}`}
+              sx={{
+                "& .MuiDataGrid-row:hover": {
+                  backgroundColor: "#f1f5f9",
+                },
+              }}
             />
           )}
         </CardContent>

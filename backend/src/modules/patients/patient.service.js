@@ -41,9 +41,25 @@ export async function createPatient(data) {
   return patient;
 }
 
-export async function getPatients(tenantId) {
+export async function getPatients(tenantId, filters) {
+  const { search, type } = filters;
+
+  const where = { tenantId };
+
+  // 🔍 SEARCH on name or patient UID
+  if (search) {
+    where.OR = [
+      { firstName: { contains: search, mode: "insensitive" } },
+      { lastName: { contains: search, mode: "insensitive" } },
+      { patientUid: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  // TYPE filter (OPD / IPD)
+  if (type) where.type = type;
+
   return prisma.patient.findMany({
-    where: { tenantId },
+    where,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -51,20 +67,12 @@ export async function getPatients(tenantId) {
       firstName: true,
       lastName: true,
       gender: true,
-      email: true,
       phone: true,
       type: true,
       doctorId: true,
       createdAt: true,
-      bloodGroup: true,
-      address: true,
-
-      // JOIN DOCTOR (USER)
       doctor: {
-        select: {
-          firstName: true,
-          lastName: true,
-        },
+        select: { firstName: true, lastName: true },
       },
     },
   });

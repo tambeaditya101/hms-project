@@ -45,7 +45,12 @@ export async function handleGetPatients(req, res) {
   try {
     const tenantId = req.tenantId;
 
-    const patients = await getPatients(tenantId);
+    const filters = {
+      search: req.query.search || "",
+      type: req.query.type || "",
+    };
+
+    const patients = await getPatients(tenantId, filters);
 
     res.status(200).json({ patients });
   } catch (error) {
