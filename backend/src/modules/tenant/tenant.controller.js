@@ -1,12 +1,15 @@
-import { registerTenant } from "./tenant.service.js";
+import { registerTenant, getTenantById } from "./tenant.service.js";
 
 export async function handleRegisterTenant(req, res) {
   try {
     const { name, address, contactEmail, contactPhone, licenseNumber } =
       req.body;
 
+    // Required field validation
     if (!name || !contactEmail || !licenseNumber) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({
+        message: "Name, contact email and license number are required",
+      });
     }
 
     const { tenant, adminUser, adminPasswordPlain } = await registerTenant({
@@ -17,7 +20,7 @@ export async function handleRegisterTenant(req, res) {
       licenseNumber,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Tenant registered successfully",
       tenant: {
         id: tenant.id,
@@ -29,16 +32,14 @@ export async function handleRegisterTenant(req, res) {
         username: adminUser.username,
         email: adminUser.email,
         roles: adminUser.roles,
-        tempPassword: adminPasswordPlain, // for hackathon only
+        tempPassword: adminPasswordPlain, // Temporary password
       },
     });
   } catch (error) {
-    console.error("Error in handleRegisterTenant:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Tenant registration error:", error);
+    return res.status(400).json({ message: error.message });
   }
 }
-
-import { getTenantById } from "./tenant.service.js";
 
 export async function handleGetTenant(req, res) {
   try {
@@ -50,8 +51,7 @@ export async function handleGetTenant(req, res) {
 
     const tenant = await getTenantById(tenantId);
 
-    res.json({
-      success: true,
+    return res.status(200).json({
       tenant: {
         id: tenant.id,
         name: tenant.name,
@@ -64,7 +64,6 @@ export async function handleGetTenant(req, res) {
       },
     });
   } catch (error) {
-    console.error("Error fetching tenant:", error);
-    res.status(404).json({ message: error.message });
+    return res.status(404).json({ message: error.message });
   }
 }

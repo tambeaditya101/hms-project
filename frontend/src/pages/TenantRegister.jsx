@@ -39,9 +39,15 @@ export default function TenantRegister() {
 
     try {
       const res = await api.post("/tenants/register", form);
+
+      // Save tenant ID for login
+      localStorage.setItem("tenantId", res.data.tenant.id);
+
       setSuccessData(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(
+        err?.response?.data?.message ?? err?.message ?? "Registration failed"
+      );
     } finally {
       setLoading(false);
     }

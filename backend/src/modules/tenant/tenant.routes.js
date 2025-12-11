@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { handleGetTenant, handleRegisterTenant } from "./tenant.controller.js";
+import { handleRegisterTenant, handleGetTenant } from "./tenant.controller.js";
 
 const router = Router();
 
+// Register a new tenant (hospital onboarding)
 router.post("/register", handleRegisterTenant);
 
-// Get tenant details by ID
+// Get tenant details
 router.get("/:tenantId", handleGetTenant);
 
 export default router;

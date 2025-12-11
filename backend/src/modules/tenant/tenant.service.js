@@ -1,18 +1,20 @@
 import prisma from "../../config/prisma.js";
-import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 
 export async function registerTenant(data) {
   const { name, address, contactEmail, contactPhone, licenseNumber } = data;
 
-  // 1. Check license uniqueness
+  // Check uniqueness of license
   const exists = await prisma.tenant.findUnique({
     where: { licenseNumber },
   });
-  if (exists) throw new Error("License number already exists");
 
-  // 2. Start a transaction: create tenant + admin user
-  const result = await prisma.$transaction(async (tx) => {
+  if (exists)
+    throw new Error("A tenant with this license number already exists.");
+
+  // Start transaction
+  return await prisma.$transaction(async (tx) => {
     const tenantId = uuidv4();
 
     const tenant = await tx.tenant.create({
@@ -26,12 +28,9 @@ export async function registerTenant(data) {
       },
     });
 
-    // 3. Create default hospital admin user
-    const adminPasswordPlain = "Admin@123"; // you can return this in response or email it
+    // Create admin user for tenant
+    const adminPasswordPlain = "Admin@123";
     const passwordHash = await bcrypt.hash(adminPasswordPlain, 10);
-
-    const username = `admin_${tenantId.slice(0, 8)}`;
-    const adminEmail = contactEmail; // or admin@{hospital-domain}
 
     const adminUser = await tx.user.create({
       data: {
@@ -39,20 +38,18 @@ export async function registerTenant(data) {
         tenantId: tenant.id,
         firstName: "Hospital",
         lastName: "Admin",
-        email: adminEmail,
+        email: contactEmail,
         phone: contactPhone || null,
-        username,
+        username: `admin_${tenantId.slice(0, 6)}`,
         passwordHash,
         department: "ADMINISTRATION",
-        status: "ACTIVE",
         roles: ["ADMIN"],
+        status: "ACTIVE",
       },
     });
 
     return { tenant, adminUser, adminPasswordPlain };
   });
-
-  return result;
 }
 
 export async function getTenantById(tenantId) {
