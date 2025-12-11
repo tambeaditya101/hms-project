@@ -11,6 +11,8 @@ import EditUser from "../pages/users/EditUser";
 import ResetPassword from "../pages/ResetPassword";
 import Unauthorized from "../pages/Unauthorized";
 import { ROLE } from "./rbac";
+import AppointmentDetails from "../pages/appointments/AppointmentDetails";
+import EditAppointment from "../pages/appointments/EditAppointment";
 
 export const ROUTES = [
   {
@@ -67,5 +69,15 @@ export const ROUTES = [
     path: "reset-password",
     element: ResetPassword,
     roles: "ANY", // any logged-in user
+  },
+  {
+    path: "appointments/:id",
+    element: AppointmentDetails,
+    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST, ROLE.DOCTOR],
+  },
+  {
+    path: "appointments/:id/edit",
+    element: EditAppointment,
+    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST, ROLE.DOCTOR],
   },
 ];

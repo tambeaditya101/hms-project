@@ -180,6 +180,21 @@ export default function AppointmentsList() {
         flex: 1,
         valueGetter: (p) => p ?? "—",
       },
+      {
+        field: "actions",
+        headerName: "Actions",
+        width: 160,
+        renderCell: (params) => (
+          <Button
+            variant="contained"
+            size="small"
+            className="!bg-blue-600 hover:!bg-blue-700"
+            onClick={() => navigate(`/appointments/${params.row.id}`)}
+          >
+            View
+          </Button>
+        ),
+      },
     ],
     []
   );
