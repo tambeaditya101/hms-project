@@ -75,17 +75,32 @@ export default function ResetPassword() {
             />
 
             {error && <Alert severity="error">{error}</Alert>}
-            {success && <Alert severity="success">{success}</Alert>}
+            {success && (
+              <>
+                <Alert severity="success">{success}</Alert>
 
-            <Button
-              fullWidth
-              type="submit" // ← REQUIRED
-              variant="contained"
-              disabled={loading}
-              className="!bg-blue-600 hover:!bg-blue-700"
-            >
-              {loading ? <CircularProgress size={20} /> : "Reset Password"}
-            </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  className="!bg-green-600 hover:!bg-green-700 mt-3"
+                  onClick={() => (window.location.href = "/login")}
+                >
+                  Go to Login
+                </Button>
+              </>
+            )}
+
+            {!success && (
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                disabled={loading}
+                className="!bg-blue-600 hover:!bg-blue-700"
+              >
+                {loading ? <CircularProgress size={20} /> : "Reset Password"}
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>

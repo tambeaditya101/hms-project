@@ -3,8 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export async function loginUser(username, password) {
-  // 1. Find user
-  const user = await prisma.user.findUnique({
+  // 1. Find user WITH tenant
+  const user = await prisma.user.findFirst({
     where: { username },
   });
 
@@ -18,18 +18,17 @@ export async function loginUser(username, password) {
     throw new Error("Invalid username or password");
   }
 
-  // 3. Create JWT payload
-  const payload = {
-    userId: user.id,
-    tenantId: user.tenantId,
-    roles: user.roles,
-  };
+  // 3. Create JWT
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      tenantId: user.tenantId,
+      roles: user.roles,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-
-  // 4. Return user + forcePasswordChange flag
   return {
     token,
     user: {
