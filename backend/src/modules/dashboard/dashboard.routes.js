@@ -10,7 +10,14 @@ router.get(
   "/summary",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  authorizeRoles(
+    "ADMIN",
+    "RECEPTIONIST",
+    "DOCTOR",
+    "NURSE",
+    "PHARMACIST",
+    "ACCOUNTANT"
+  ),
   handleDashboardSummary
 );
 

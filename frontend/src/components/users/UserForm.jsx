@@ -14,7 +14,11 @@ import {
 } from "@mui/material";
 
 import UserRoleChips from "./UserRoleChips";
-import { ROLE_OPTIONS, STATUS_OPTIONS, DEPARTMENT_OPTIONS } from "./constants";
+import {
+  ROLE_OPTIONS,
+  STATUS_OPTIONS,
+  DEPARTMENT_OPTIONS,
+} from "./userConstants";
 
 export default function UserForm({
   form,

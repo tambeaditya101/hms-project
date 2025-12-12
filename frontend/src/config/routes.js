@@ -10,74 +10,82 @@ import UserDetails from "../pages/users/UserDetails";
 import EditUser from "../pages/users/EditUser";
 import ResetPassword from "../pages/ResetPassword";
 import Unauthorized from "../pages/Unauthorized";
-import { ROLE } from "./rbac";
 import AppointmentDetails from "../pages/appointments/AppointmentDetails";
 import EditAppointment from "../pages/appointments/EditAppointment";
+
+import { ROLES } from "../components/users/userConstants";
 
 export const ROUTES = [
   {
     index: true,
     element: Dashboard,
-    roles: [ROLE.ADMIN],
+    roles: [
+      ROLES.ADMIN,
+      ROLES.ACCOUNTANT,
+      ROLES.DOCTOR,
+      ROLES.NURSE,
+      ROLES.RECEPTIONIST,
+      ROLES.PHARMACIST,
+    ],
   },
   {
     path: "patients",
     element: PatientsList,
-    roles: [ROLE.ADMIN, ROLE.DOCTOR, ROLE.NURSE, ROLE.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.NURSE, ROLES.RECEPTIONIST],
   },
   {
     path: "patients/create",
     element: CreatePatient,
-    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST, ROLES.DOCTOR],
   },
   {
     path: "patients/:id",
     element: PatientDetails,
-    roles: [ROLE.ADMIN, ROLE.DOCTOR, ROLE.NURSE],
+    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.NURSE, ROLES.RECEPTIONIST],
   },
   {
     path: "appointments",
     element: AppointmentsList,
-    roles: [ROLE.ADMIN, ROLE.DOCTOR, ROLE.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.RECEPTIONIST],
   },
   {
     path: "appointments/create",
     element: CreateAppointment,
-    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST],
   },
   {
     path: "users",
     element: UsersList,
-    roles: [ROLE.ADMIN],
+    roles: [ROLES.ADMIN],
   },
   {
     path: "users/create",
     element: CreateUser,
-    roles: [ROLE.ADMIN],
+    roles: [ROLES.ADMIN],
   },
   {
     path: "users/:id",
     element: UserDetails,
-    roles: [ROLE.ADMIN],
+    roles: [ROLES.ADMIN],
   },
   {
     path: "users/:id/edit",
     element: EditUser,
-    roles: [ROLE.ADMIN],
+    roles: [ROLES.ADMIN],
   },
   {
     path: "reset-password",
     element: ResetPassword,
-    roles: "ANY", // any logged-in user
+    roles: ["ANY"], // allow all authenticated users
   },
   {
     path: "appointments/:id",
     element: AppointmentDetails,
-    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST, ROLE.DOCTOR],
+    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST, ROLES.DOCTOR],
   },
   {
     path: "appointments/:id/edit",
     element: EditAppointment,
-    roles: [ROLE.ADMIN, ROLE.RECEPTIONIST, ROLE.DOCTOR],
+    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST, ROLES.DOCTOR],
   },
 ];

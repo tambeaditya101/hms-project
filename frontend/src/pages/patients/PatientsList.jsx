@@ -17,6 +17,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import api from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils/formatDate";
+import { hasRole } from "../../utils/permissions";
 
 export default function PatientsList() {
   const navigate = useNavigate();
@@ -145,6 +146,13 @@ export default function PatientsList() {
     },
   ];
 
+  // const canCreate = () => {
+  //   const allowed = ["ADMIN", "DOCTOR", "RECEPTIONIST"];
+  //   return allowed.some((r) => user?.roles?.includes(r));
+  // };
+
+  const canCreate = hasRole(user, ["ADMIN", "DOCTOR", "RECEPTIONIST"]);
+
   return (
     <Box className="p-6">
       {/* TITLE */}
@@ -227,8 +235,7 @@ export default function PatientsList() {
           <MenuItem value="IPD">IPD</MenuItem>
         </TextField>
 
-        {(user?.roles?.includes("ADMIN") ||
-          user?.roles?.includes("DOCTOR")) && (
+        {canCreate && (
           <Button
             variant="contained"
             onClick={() => navigate("/patients/create")}
