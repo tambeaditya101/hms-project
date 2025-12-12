@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogContent,
   Button,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
@@ -62,6 +63,10 @@ export default function CreateUser() {
       {/* SUCCESS MODAL */}
       <Dialog open={!!createdUser} onClose={() => navigate("/users")}>
         <DialogTitle>User Created Successfully</DialogTitle>
+        <Alert severity="warning" className="mb-4 font-medium">
+          ⚠️ Please save these credentials securely. This is the{" "}
+          <strong>only time</strong> they will be shown.
+        </Alert>
         <DialogContent>
           <Typography>
             <strong>Username:</strong> {createdUser?.username}

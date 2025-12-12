@@ -189,6 +189,11 @@ export default function TenantRegister() {
                 <Alert severity="success" className="mb-4">
                   🎉 Hospital registered successfully!
                 </Alert>
+                {/* WARNING BOX */}
+                <Alert severity="warning" className="mb-4 font-medium">
+                  ⚠️ Please save these credentials securely. This is the{" "}
+                  <strong>only time</strong> they will be shown.
+                </Alert>
 
                 <Typography variant="h6" className="font-bold text-gray-700">
                   Admin Login Credentials
