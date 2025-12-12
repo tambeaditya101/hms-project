@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "../store/index.js";
 
 const api = axios.create({
-  baseURL: "https://hms-project-be.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {
