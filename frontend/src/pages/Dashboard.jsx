@@ -28,56 +28,73 @@ export default function Dashboard() {
     );
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Heading */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-800">
-          Dashboard Overview
-        </h1>
-        <p className="text-gray-500 mt-1">
-          A quick summary of patients, doctors, appointments, and revenue.
-        </p>
-      </div>
+    <>
+      <HospitalSVG />
+      <div className="relative p-6 space-y-8 overflow-hidden">
+        {/* SVG illustration (fixed, non-overlapping) */}
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard
-          title="Total Patients"
-          value={summary?.totalPatients}
-          icon={UsersIcon}
-          gradient="from-blue-500/10 to-blue-600/10"
-          borderColor="border-blue-300"
-        />
-        <StatCard
-          title="Total Doctors"
-          value={summary?.totalDoctors}
-          icon={DoctorIcon}
-          gradient="from-green-500/10 to-green-600/10"
-          borderColor="border-green-300"
-        />
-        <StatCard
-          title="Today's Appointments"
-          value={summary?.todaysAppointments}
-          icon={CalendarIcon}
-          gradient="from-purple-500/10 to-purple-600/10"
-          borderColor="border-purple-300"
-        />
-        <StatCard
-          title="Pending Bills"
-          value={summary?.pendingBills}
-          icon={WarningIcon}
-          gradient="from-orange-500/10 to-orange-600/10"
-          borderColor="border-orange-300"
-        />
-        <StatCard
-          title="Total Revenue"
-          value={`₹${summary?.totalRevenue}`}
-          icon={MoneyIcon}
-          gradient="from-emerald-500/10 to-emerald-600/10"
-          borderColor="border-emerald-300"
-        />
+        {/* Heading */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-800">
+            Dashboard Overview
+          </h1>
+          <p className="text-gray-500 mt-1">
+            A quick summary of patients, doctors, appointments, and activity.
+          </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StatCard
+            title="Total Patients"
+            value={summary.totalPatients}
+            icon={UsersIcon}
+            gradient="from-blue-500/10 to-blue-600/10"
+            borderColor="border-blue-300"
+          />
+
+          <StatCard
+            title="OPD Patients"
+            value={summary.opdPatients}
+            icon={ClipboardIcon}
+            gradient="from-purple-500/10 to-purple-600/10"
+            borderColor="border-purple-300"
+          />
+
+          <StatCard
+            title="IPD Patients"
+            value={summary.ipdPatients}
+            icon={BedIcon}
+            gradient="from-red-500/10 to-red-600/10"
+            borderColor="border-red-300"
+          />
+
+          <StatCard
+            title="Total Doctors"
+            value={summary.totalDoctors}
+            icon={DoctorIcon}
+            gradient="from-green-500/10 to-green-600/10"
+            borderColor="border-green-300"
+          />
+
+          <StatCard
+            title="Today's New Patients"
+            value={summary.todayNewPatients}
+            icon={CalendarIcon}
+            gradient="from-yellow-500/10 to-yellow-600/10"
+            borderColor="border-yellow-300"
+          />
+
+          <StatCard
+            title="Today's Prescriptions"
+            value={summary.todayPrescriptions}
+            icon={ClipboardIcon}
+            gradient="from-emerald-500/10 to-emerald-600/10"
+            borderColor="border-emerald-300"
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -105,7 +122,7 @@ function StatCard({ title, value, icon: Icon, gradient, borderColor }) {
   );
 }
 
-/* ------------------ ICONS (No Library Needed) ------------------ */
+/* ------------------ ICONS (SVG) ------------------ */
 
 function UsersIcon({ className }) {
   return (
@@ -116,7 +133,7 @@ function UsersIcon({ className }) {
       strokeWidth="1.8"
       viewBox="0 0 24 24"
     >
-      <path d="M16 14c2.21 0 4 1.79 4 4v2H4v-2c0-2.21 1.79-4 4-4m8-10a4 4 0 11-8 0 4 4 0 018 0z" />
+      <path d="M16 14c2.2 0 4 1.8 4 4v2H4v-2c0-2.2 1.8-4 4-4m8-10a4 4 0 11-8 0 4 4 0 018 0z" />
     </svg>
   );
 }
@@ -149,7 +166,7 @@ function CalendarIcon({ className }) {
   );
 }
 
-function WarningIcon({ className }) {
+function ClipboardIcon({ className }) {
   return (
     <svg
       className={className}
@@ -158,12 +175,12 @@ function WarningIcon({ className }) {
       strokeWidth="1.8"
       viewBox="0 0 24 24"
     >
-      <path d="M12 9v4m0 4h.01M10.29 3.86l-9.18 16A2 2 0 002.82 23h18.36a2 2 0 001.71-3.14l-9.18-16a2 2 0 00-3.42 0z" />
+      <path d="M9 2h6v2H9zM5 6h14v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6z" />
     </svg>
   );
 }
 
-function MoneyIcon({ className }) {
+function BedIcon({ className }) {
   return (
     <svg
       className={className}
@@ -172,7 +189,24 @@ function MoneyIcon({ className }) {
       strokeWidth="1.8"
       viewBox="0 0 24 24"
     >
-      <path d="M12 8c-2.2 0-4 1.3-4 3s1.8 3 4 3 4 1.3 4 3-1.8 3-4 3m0-15v2m0 10v2m9-5h2M1 12h2m17.07 7.07l1.41 1.41M2.93 4.93l1.41 1.41m0 12.73l-1.41 1.41m15.56-15.56l1.41-1.41" />
+      <path d="M3 10h18v8H3zM7 10V7a2 2 0 012-2h6a2 2 0 012 2v3" />
+    </svg>
+  );
+}
+
+/* ------------------ Hospital Background SVG ------------------ */
+
+function HospitalSVG() {
+  return (
+    <svg
+      className="absolute bottom-6 right-6 w-72 opacity-15 pointer-events-none"
+      viewBox="0 0 512 512"
+      fill="none"
+      stroke="#3b82f6"
+      strokeWidth="12"
+    >
+      <path d="M256 32l160 80v120c0 120-80 200-160 240-80-40-160-120-160-240V112z" />
+      <path d="M216 200h80M256 160v80" strokeLinecap="round" />
     </svg>
   );
 }
