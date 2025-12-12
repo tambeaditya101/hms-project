@@ -14,6 +14,8 @@ import AppointmentDetails from "../pages/appointments/AppointmentDetails";
 import EditAppointment from "../pages/appointments/EditAppointment";
 
 import { ROLES } from "../components/users/userConstants";
+import PrescriptionsList from "../pages/prescriptions/PrescriptionsList";
+import BillingList from "../pages/billing/BillingList";
 
 export const ROUTES = [
   {
@@ -87,5 +89,15 @@ export const ROUTES = [
     path: "appointments/:id/edit",
     element: EditAppointment,
     roles: [ROLES.ADMIN, ROLES.RECEPTIONIST, ROLES.DOCTOR],
+  },
+  {
+    path: "prescriptions",
+    element: PrescriptionsList,
+    roles: ["ADMIN", "DOCTOR", "NURSE"], // allow whoever you want
+  },
+  {
+    path: "billing",
+    element: BillingList,
+    roles: ["ADMIN", "ACCOUNTANT"],
   },
 ];

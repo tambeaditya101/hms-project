@@ -5,8 +5,8 @@ const menuItems = [
   { label: "Dashboard", path: "/" },
   { label: "Patients", path: "/patients" },
   { label: "Appointments", path: "/appointments" },
-  // { label: "Prescriptions", path: "/prescriptions" },
-  // { label: "Billing", path: "/billing" },
+  { label: "Prescriptions", path: "/prescriptions" },
+  { label: "Billing", path: "/billing" },
   { label: "Users", path: "/users" },
 ];
 
