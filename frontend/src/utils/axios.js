@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "../store/index.js";
 
 const api = axios.create({
-  baseURL: "https://hms-project-be.onrender.com/debug/health-app/api",
+  baseURL: "https://hms-project-be.onrender.com/api",
 });
 
 api.interceptors.request.use((config) => {
