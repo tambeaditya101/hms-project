@@ -142,9 +142,10 @@ authenticate (JWT verify → req.user, req.tenantId)
 | `NURSE`        | —         | Read        | Read/Create        | Read          | —               | Read      |
 | `RECEPTIONIST` | —         | Read/Create | Full CRUD          | —             | Create/Read/Pay | Read      |
 | `PHARMACIST`   | —         | —           | —                  | Read          | —               | Read      |
-| `ACCOUNTANT`   | —         | —           | —                  | —             | —               | Read      |
+| `ACCOUNTANT`   | —         | —           | —                  | —             | Create/Read/Pay | Read      |
 
 **Frontend enforcement:** `ProtectedRoute.jsx` checks roles client-side. **Backend enforcement:** Each route file calls `authorizeRoles(...)` — both layers must agree.
+**Sidebar:** Dynamically filtered by user role — only menu items the user has access to are visible.
 
 ---
 
@@ -250,12 +251,10 @@ Routes are defined declaratively in `config/routes.js`:
 | 5   | **No refresh token**                       | Users are logged out after 1 hour (JWT expiry). No seamless renewal.                                                                                    |
 | 6   | **No code splitting**                      | All frontend routes load eagerly. Bundle size grows with every page added.                                                                              |
 | 7   | **Missing DB indexes**                     | No composite indexes on frequently queried fields (appointment conflicts, dashboard counts).                                                            |
-| 8   | **Billing role discrepancy**               | Architecture doc says ACCOUNTANT can access billing, but routes only allow ADMIN + RECEPTIONIST.                                                        |
-| 9   | **Sidebar not role-filtered**              | All menu items are visible to all users; unauthorized users see a 403 page after clicking.                                                              |
-| 10  | **`photoUrl` field unused**                | Patient `photoUrl` exists in schema but no file upload service is implemented.                                                                          |
-| 11  | **No audit trail**                         | No `createdBy`, `updatedBy`, or action logging on any model.                                                                                            |
-| 12  | **`x-tenant-id` header unused**            | Frontend sends it, but backend derives tenant context from JWT (`req.tenantId`). The header is redundant.                                               |
-| 13  | **Password complexity**                    | No minimum requirements enforced. Users can set any password during reset.                                                                              |
+| 8   | **`photoUrl` field unused**                | Patient `photoUrl` exists in schema but no file upload service is implemented.                                                                          |
+| 9   | **No audit trail**                         | No `createdBy`, `updatedBy`, or action logging on any model.                                                                                            |
+| 10  | **`x-tenant-id` header unused**            | Frontend sends it, but backend derives tenant context from JWT (`req.tenantId`). The header is redundant.                                               |
+| 11  | **Password complexity**                    | No minimum requirements enforced on backend. Only tenant registration has min 8 chars validation.                                                       |
 
 ---
 
@@ -265,7 +264,7 @@ These are stated assumptions from the architecture analysis. Treat as unverified
 
 1. **DB indexes** may exist in production but are not in the Prisma schema.
 2. **No token refresh** — users re-login after 1 hour.
-3. **Sidebar is static** — all items visible regardless of role.
+3. **Sidebar is role-filtered** — menu items are dynamically shown based on user roles (defined in `Sidebar.jsx` with `ROLES` constants).
 4. **Password policy** — no complexity enforcement.
 5. **Backend deployed on Render**, frontend on a static host (Vercel/Netlify) — unconfirmed.
 6. **No seed scripts** — initial data is created via the API.

@@ -547,16 +547,16 @@ api.interceptors.request.use((config) => {
 
 ```javascript
 const menuItems = [
-  { label: 'Dashboard', path: '/' },
-  { label: 'Patients', path: '/patients' },
-  { label: 'Appointments', path: '/appointments' },
-  { label: 'Prescriptions', path: '/prescriptions' },
-  { label: 'Billing', path: '/billing' },
-  { label: 'Users', path: '/users' },
+  { label: 'Dashboard', path: '/', roles: [ALL_ROLES] },
+  { label: 'Patients', path: '/patients', roles: [ADMIN, DOCTOR, NURSE, RECEPTIONIST] },
+  { label: 'Appointments', path: '/appointments', roles: [ADMIN, DOCTOR, NURSE, RECEPTIONIST] },
+  { label: 'Prescriptions', path: '/prescriptions', roles: [ADMIN, DOCTOR, NURSE, PHARMACIST] },
+  { label: 'Billing', path: '/billing', roles: [ADMIN, RECEPTIONIST, ACCOUNTANT] },
+  { label: 'Users', path: '/users', roles: [ADMIN] },
 ];
 ```
 
-**Assumption:** Sidebar menu is **not dynamically filtered** by role. All menu items are visible regardless of user permissions. RBAC is enforced at the route level (user sees 403 page if unauthorized).
+**Sidebar is dynamically filtered** by user role. Each menu item has an associated `roles` array (using `ROLES` constants from `userConstants.js`). Only items matching the user's roles are displayed.
 
 ---
 
@@ -920,7 +920,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 
 1. **Database Indexes:** Assumed to exist in production but not in Prisma schema
 2. **Token Refresh:** No refresh token mechanism; users re-login after 1 hour
-3. **Sidebar Visibility:** All menu items visible; RBAC enforced at route level
+3. **Sidebar Visibility:** Dynamically filtered by user role; only accessible menu items are shown
 4. **Password Policy:** No complexity requirements enforced
 5. **Deployment:** Backend on Render, frontend on static host (unconfirmed)
 6. **Data Seeding:** No seed scripts; initial data created via API

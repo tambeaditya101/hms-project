@@ -17,7 +17,7 @@ router.post(
   "/create",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  authorizeRoles("ADMIN", "RECEPTIONIST", "ACCOUNTANT"),
   handleCreateBill
 );
 
@@ -26,7 +26,7 @@ router.get(
   "/",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  authorizeRoles("ADMIN", "RECEPTIONIST", "ACCOUNTANT"),
   handleGetBills
 );
 
@@ -35,7 +35,7 @@ router.get(
   "/patient/:patientId",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  authorizeRoles("ADMIN", "RECEPTIONIST", "ACCOUNTANT"),
   handleGetPatientBills
 );
 
@@ -44,7 +44,7 @@ router.post(
   "/:billId/pay",
   authenticate,
   enforceTenantAccess,
-  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  authorizeRoles("ADMIN", "RECEPTIONIST", "ACCOUNTANT"),
   handleAddPayment
 );
 

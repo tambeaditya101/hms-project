@@ -48,12 +48,12 @@ export const ROUTES = [
   {
     path: "appointments",
     element: AppointmentsList,
-    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.RECEPTIONIST, ROLES.NURSE],
   },
   {
     path: "appointments/create",
     element: CreateAppointment,
-    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST],
+    roles: [ROLES.ADMIN, ROLES.RECEPTIONIST, ROLES.NURSE],
   },
   {
     path: "users",
@@ -93,11 +93,11 @@ export const ROUTES = [
   {
     path: "prescriptions",
     element: PrescriptionsList,
-    roles: ["ADMIN", "DOCTOR", "NURSE"], // allow whoever you want
+    roles: [ROLES.ADMIN, ROLES.DOCTOR, ROLES.NURSE],
   },
   {
     path: "billing",
     element: BillingList,
-    roles: ["ADMIN", "ACCOUNTANT"],
+    roles: [ROLES.ADMIN, ROLES.ACCOUNTANT],
   },
 ];
