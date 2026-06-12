@@ -1,26 +1,25 @@
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Button,
-  Chip,
   Avatar,
+  Box,
+  Chip,
+  IconButton,
   Menu,
   MenuItem,
-  IconButton,
-} from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../store/authSlice";
-import { useEffect, useState } from "react";
-import api from "../../utils/axios";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../store/authSlice';
+import api from '../../utils/axios';
 
 export default function Topbar() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
-  const [tenantName, setTenantName] = useState("Hospital Management System");
+  const [tenantName, setTenantName] = useState('Hospital Management System');
   const [anchorEl, setAnchorEl] = useState(null);
 
   const openMenu = Boolean(anchorEl);
@@ -28,7 +27,7 @@ export default function Topbar() {
   const handleMenuClick = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
-  const department = user?.department || "User";
+  const department = user?.department || 'User';
 
   // Fetch tenant name
   useEffect(() => {
@@ -37,117 +36,116 @@ export default function Topbar() {
 
       try {
         const res = await api.get(`/tenants/${user.tenantId}`);
-        setTenantName(res?.data?.tenant?.name || "Hospital Management System");
+        setTenantName(res?.data?.tenant?.name || 'Hospital Management System');
       } catch (err) {
-        console.error("Failed to fetch tenant name", err);
+        console.error('Failed to fetch tenant name', err);
       }
     }
 
     fetchTenant();
   }, [user?.tenantId]);
 
-  const firstName = user?.firstName || "";
-  const lastName = user?.lastName || "";
+  const firstName = user?.firstName || '';
+  const lastName = user?.lastName || '';
 
-  const fullName =
-    `${firstName} ${lastName}`.trim() || user?.username || "User";
+  const fullName = `${firstName} ${lastName}`.trim() || user?.email || 'User';
 
   const getInitials = (first, last) => {
-    const f = first?.[0] || "";
-    const l = last?.[0] || "";
+    const f = first?.[0] || '';
+    const l = last?.[0] || '';
     return (f + l).toUpperCase();
   };
 
   return (
     <AppBar
-      position="fixed"
+      position='fixed'
       elevation={0}
       sx={{
-        background: "rgba(255,255,255,0.75)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid #e5e7eb",
+        background: 'rgba(255,255,255,0.75)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid #e5e7eb',
       }}
     >
       <Toolbar
         sx={{
           height: 70,
-          display: "flex",
-          justifyContent: "space-between",
+          display: 'flex',
+          justifyContent: 'space-between',
           px: 3,
         }}
       >
         {/* LEFT SIDE: Branding */}
         <Box>
           <Typography
-            variant="h6"
+            variant='h6'
             sx={{
               fontWeight: 700,
-              color: "#1e40af",
-              letterSpacing: "0.4px",
+              color: '#1e40af',
+              letterSpacing: '0.4px',
             }}
           >
             {tenantName}
           </Typography>
 
           <Typography
-            variant="caption"
-            sx={{ color: "#6b7280", fontSize: "0.75rem" }}
+            variant='caption'
+            sx={{ color: '#6b7280', fontSize: '0.75rem' }}
           >
             Multi-tenant Hospital Management System
           </Typography>
         </Box>
 
         {/* RIGHT SIDE: User Profile */}
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box display='flex' alignItems='center' gap={2}>
           <Chip
             label={department}
-            color="primary"
-            variant="outlined"
+            color='primary'
+            variant='outlined'
             sx={{
               fontWeight: 600,
-              textTransform: "uppercase",
-              borderRadius: "6px",
-              letterSpacing: "0.6px",
+              textTransform: 'uppercase',
+              borderRadius: '6px',
+              letterSpacing: '0.6px',
             }}
           />
 
           {/* Profile avatar + dropdown */}
-          <Box display="flex" alignItems="center">
+          <Box display='flex' alignItems='center'>
             <IconButton
               onClick={handleMenuClick}
               sx={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1,
                 borderRadius: 2,
                 px: 1,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                '&:hover': { backgroundColor: 'rgba(0,0,0,0.04)' },
               }}
             >
               <Avatar
                 sx={{
                   width: 38,
                   height: 38,
-                  bgcolor: "primary.main",
+                  bgcolor: 'primary.main',
                   fontWeight: 600,
-                  fontSize: "0.9rem",
+                  fontSize: '0.9rem',
                 }}
               >
                 {getInitials(firstName, lastName)}
               </Avatar>
 
               <Typography
-                variant="body2"
+                variant='body2'
                 sx={{
                   fontWeight: 600,
-                  color: "text.primary",
-                  display: { xs: "none", sm: "block" },
+                  color: 'text.primary',
+                  display: { xs: 'none', sm: 'block' },
                 }}
               >
                 {fullName}
               </Typography>
 
-              <KeyboardArrowDownIcon fontSize="small" />
+              <KeyboardArrowDownIcon fontSize='small' />
             </IconButton>
 
             {/* Profile Menu */}
@@ -165,7 +163,7 @@ export default function Topbar() {
                   handleMenuClose();
                   dispatch(logout());
                 }}
-                sx={{ color: "red" }}
+                sx={{ color: 'red' }}
               >
                 Logout
               </MenuItem>

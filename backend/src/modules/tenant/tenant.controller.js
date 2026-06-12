@@ -1,42 +1,71 @@
-import { registerTenant, getTenantById } from "./tenant.service.js";
+import jwt from 'jsonwebtoken';
+import { getTenantById, registerTenant } from './tenant.service.js';
 
 export async function handleRegisterTenant(req, res) {
   try {
-    const { name, address, contactEmail, contactPhone, licenseNumber } =
-      req.body;
-
-    // Required field validation
-    if (!name || !contactEmail || !licenseNumber) {
-      return res.status(400).json({
-        message: "Name, contact email and license number are required",
-      });
-    }
-
-    const { tenant, adminUser, adminPasswordPlain } = await registerTenant({
+    const {
       name,
       address,
       contactEmail,
       contactPhone,
       licenseNumber,
+      adminPassword,
+    } = req.body;
+
+    // Required field validation
+    if (!name || !contactEmail || !licenseNumber) {
+      return res.status(400).json({
+        message: 'Name, contact email and license number are required',
+      });
+    }
+
+    // Password validation
+    if (!adminPassword || adminPassword.length < 8) {
+      return res.status(400).json({
+        message: 'Admin password must be at least 8 characters',
+      });
+    }
+
+    const { tenant, adminUser } = await registerTenant({
+      name,
+      address,
+      contactEmail,
+      contactPhone,
+      licenseNumber,
+      adminPassword,
     });
 
+    // Issue JWT for auto-login
+    const token = jwt.sign(
+      {
+        userId: adminUser.id,
+        tenantId: tenant.id,
+        roles: adminUser.roles,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    );
+
     return res.status(201).json({
-      message: "Tenant registered successfully",
+      message: 'Tenant registered successfully',
+      token,
+      user: {
+        id: adminUser.id,
+        tenantId: tenant.id,
+        email: adminUser.email,
+        roles: adminUser.roles,
+        department: adminUser.department,
+        status: adminUser.status,
+        mustResetPassword: adminUser.mustResetPassword,
+      },
       tenant: {
         id: tenant.id,
         name: tenant.name,
         status: tenant.status,
       },
-      adminUser: {
-        id: adminUser.id,
-        username: adminUser.username,
-        email: adminUser.email,
-        roles: adminUser.roles,
-        tempPassword: adminPasswordPlain, // Temporary password
-      },
     });
   } catch (error) {
-    console.error("Tenant registration error:", error);
+    console.error('Tenant registration error:', error);
     return res.status(400).json({ message: error.message });
   }
 }
@@ -46,7 +75,7 @@ export async function handleGetTenant(req, res) {
     const { tenantId } = req.params;
 
     if (!tenantId) {
-      return res.status(400).json({ message: "Tenant ID is required" });
+      return res.status(400).json({ message: 'Tenant ID is required' });
     }
 
     const tenant = await getTenantById(tenantId);

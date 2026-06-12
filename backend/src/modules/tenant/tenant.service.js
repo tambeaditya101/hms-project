@@ -1,9 +1,16 @@
-import prisma from "../../config/prisma.js";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+import prisma from '../../config/prisma.js';
 
 export async function registerTenant(data) {
-  const { name, address, contactEmail, contactPhone, licenseNumber } = data;
+  const {
+    name,
+    address,
+    contactEmail,
+    contactPhone,
+    licenseNumber,
+    adminPassword,
+  } = data;
 
   // Check uniqueness of license
   const exists = await prisma.tenant.findUnique({
@@ -11,7 +18,7 @@ export async function registerTenant(data) {
   });
 
   if (exists)
-    throw new Error("A tenant with this license number already exists.");
+    throw new Error('A tenant with this license number already exists.');
 
   // Start transaction
   return await prisma.$transaction(async (tx) => {
@@ -28,27 +35,26 @@ export async function registerTenant(data) {
       },
     });
 
-    // Create admin user for tenant
-    const adminPasswordPlain = "Admin@123";
-    const passwordHash = await bcrypt.hash(adminPasswordPlain, 10);
+    // Create admin user with self-chosen password
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
 
     const adminUser = await tx.user.create({
       data: {
         id: uuidv4(),
         tenantId: tenant.id,
-        firstName: "Hospital",
-        lastName: "Admin",
+        firstName: 'Hospital',
+        lastName: 'Admin',
         email: contactEmail,
         phone: contactPhone || null,
-        username: `admin_${tenantId.slice(0, 6)}`,
         passwordHash,
-        department: "ADMINISTRATION",
-        roles: ["ADMIN"],
-        status: "ACTIVE",
+        department: 'ADMINISTRATION',
+        roles: ['ADMIN'],
+        status: 'ACTIVE',
+        mustResetPassword: false,
       },
     });
 
-    return { tenant, adminUser, adminPasswordPlain };
+    return { tenant, adminUser };
   });
 }
 
@@ -57,7 +63,7 @@ export async function getTenantById(tenantId) {
     where: { id: tenantId },
   });
 
-  if (!tenant) throw new Error("Tenant not found");
+  if (!tenant) throw new Error('Tenant not found');
 
   return tenant;
 }

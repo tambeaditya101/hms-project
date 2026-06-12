@@ -1,21 +1,21 @@
-import prisma from "../../config/prisma.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import prisma from '../../config/prisma.js';
 
-export async function loginUser(username, password) {
-  // 1. Find user WITH tenant
+export async function loginUser(email, password) {
+  // 1. Find user by email
   const user = await prisma.user.findFirst({
-    where: { username },
+    where: { email },
   });
 
   if (!user) {
-    throw new Error("Invalid username or password");
+    throw new Error('Invalid email or password');
   }
 
   // 2. Compare password
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) {
-    throw new Error("Invalid username or password");
+    throw new Error('Invalid email or password');
   }
 
   // 3. Create JWT
@@ -26,7 +26,7 @@ export async function loginUser(username, password) {
       roles: user.roles,
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: '1h' },
   );
 
   return {
@@ -35,7 +35,6 @@ export async function loginUser(username, password) {
       id: user.id,
       tenantId: user.tenantId,
       email: user.email,
-      username: user.username,
       roles: user.roles,
       department: user.department,
       status: user.status,

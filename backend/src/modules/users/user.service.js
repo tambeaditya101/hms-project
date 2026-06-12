@@ -1,7 +1,7 @@
-import prisma from "../../config/prisma.js";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
-import { validateUserInput } from "./user.validation.js";
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+import prisma from '../../config/prisma.js';
+import { validateUserInput } from './user.validation.js';
 
 export async function createUser(data) {
   const { tenantId, firstName, lastName, email, phone, department, roles } =
@@ -16,14 +16,8 @@ export async function createUser(data) {
   });
 
   if (exists) {
-    throw new Error("A user with this email already exists in this hospital");
+    throw new Error('A user with this email already exists in this hospital');
   }
-
-  // Auto-generate username
-  const random = Math.floor(1000 + Math.random() * 9000); // 4 digits
-  const username = `${firstName.toLowerCase()}.${(
-    lastName || "user"
-  ).toLowerCase()}_${random}`;
 
   // Auto-generate temporary password
   const tempPassword = `Temp@${Math.floor(1000 + Math.random() * 9000)}`;
@@ -39,17 +33,15 @@ export async function createUser(data) {
       phone,
       department: validated.department,
       roles: validated.roles,
-      username,
       passwordHash,
       mustResetPassword: true, // ⬅ important
-      status: "ACTIVE",
+      status: 'ACTIVE',
     },
   });
 
   return {
     id: user.id,
     email: user.email,
-    username: user.username,
     roles: user.roles,
     tempPassword, // frontend shows this once
   };
@@ -65,7 +57,6 @@ export async function getUsers(tenantId) {
       email: true,
       phone: true,
       department: true,
-      username: true,
       roles: true,
       status: true,
       createdAt: true,
@@ -91,7 +82,7 @@ export async function getDoctors(tenantId) {
   const doctors = await prisma.user.findMany({
     where: {
       tenantId,
-      roles: { has: "DOCTOR" }, // Array contains DOCTOR
+      roles: { has: 'DOCTOR' }, // Array contains DOCTOR
     },
     select: {
       id: true,
@@ -100,7 +91,6 @@ export async function getDoctors(tenantId) {
       email: true,
       phone: true,
       department: true,
-      username: true,
       createdAt: true,
     },
   });

@@ -1,45 +1,45 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setCredentials } from "../store/authSlice";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../utils/axios";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { setCredentials } from '../store/authSlice';
+import api from '../utils/axios';
 
 import {
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  TextField,
-  Button,
   CircularProgress,
   Divider,
-} from "@mui/material";
+  TextField,
+  Typography,
+} from '@mui/material';
 
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { username, password });
+      const res = await api.post('/auth/login', { email, password });
 
       const { token, user, mustResetPassword } = res.data;
       dispatch(setCredentials({ token, user }));
 
-      navigate(mustResetPassword ? "/reset-password" : "/");
+      navigate(mustResetPassword ? '/reset-password' : '/');
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ export default function Login() {
 
   return (
     <Box
-      className="
+      className='
         min-h-screen 
         flex 
         items-center 
@@ -56,11 +56,11 @@ export default function Login() {
         from-blue-50 
         to-blue-200 
         p-6
-      "
+      '
     >
       <Card
         elevation={10}
-        className="
+        className='
           w-full 
           max-w-4xl
           rounded-3xl 
@@ -68,12 +68,12 @@ export default function Login() {
           border border-gray-200
           shadow-[0_10px_40px_rgba(0,0,0,0.15)]
           backdrop-blur-xl
-        "
+        '
       >
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className='grid grid-cols-1 md:grid-cols-2'>
           {/* LEFT BRAND PANEL */}
           <Box
-            className="
+            className='
               bg-gradient-to-br 
               from-blue-600 
               to-blue-700 
@@ -84,7 +84,7 @@ export default function Login() {
               items-center 
               p-10 
               relative
-            "
+            '
           >
             {/* Soft glow background */}
             <div
@@ -98,64 +98,65 @@ export default function Login() {
 
             <LocalHospitalIcon
               sx={{ fontSize: 80 }}
-              className="drop-shadow-2xl"
+              className='drop-shadow-2xl'
             />
 
             <Typography
-              variant="h4"
-              className="
+              variant='h4'
+              className='
                 font-extrabold 
                 mt-4 
                 text-center 
                 drop-shadow 
                 leading-tight
-              "
+              '
             >
               Hospital Management System
             </Typography>
 
-            <Typography className="opacity-90 mt-3 text-center text-sm leading-relaxed">
+            <Typography className='opacity-90 mt-3 text-center text-sm leading-relaxed'>
               A secure login gateway for hospital administrators and staff.
             </Typography>
           </Box>
 
           {/* RIGHT LOGIN FORM */}
-          <CardContent className="p-10 bg-white">
+          <CardContent className='p-10 bg-white'>
             <Typography
-              variant="h5"
-              className="font-bold text-center mb-6 text-gray-800"
+              variant='h5'
+              className='font-bold text-center mb-6 text-gray-800'
             >
               Welcome Back
             </Typography>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleLogin} className='space-y-5'>
               <TextField
                 fullWidth
-                label="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                label='Email'
+                type='email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
 
               <TextField
                 fullWidth
-                label="Password"
-                type="password"
+                label='Password'
+                type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
 
               {error && (
-                <p className="text-red-600 text-sm text-center">{error}</p>
+                <p className='text-red-600 text-sm text-center'>{error}</p>
               )}
 
               <Button
-                type="submit"
+                type='submit'
                 fullWidth
-                variant="contained"
+                variant='contained'
                 disabled={loading}
-                className="
+                className='
                   !bg-blue-600 
                   hover:!bg-blue-700 
                   py-2.5 
@@ -164,23 +165,23 @@ export default function Login() {
                   rounded-lg 
                   transition-all 
                   duration-200
-                "
+                '
               >
                 {loading ? (
-                  <CircularProgress size={24} className="text-white" />
+                  <CircularProgress size={24} className='text-white' />
                 ) : (
-                  "Sign In"
+                  'Sign In'
                 )}
               </Button>
             </form>
 
-            <Divider className="my-6" />
+            <Divider className='my-6' />
 
-            <Typography className="text-center text-sm text-gray-600">
-              New hospital?{" "}
+            <Typography className='text-center text-sm text-gray-600'>
+              New hospital?{' '}
               <Link
-                to="/register"
-                className="text-blue-600 font-semibold hover:underline"
+                to='/register'
+                className='text-blue-600 font-semibold hover:underline'
               >
                 Register here
               </Link>

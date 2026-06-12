@@ -1,24 +1,22 @@
 // src/components/users/UserForm.jsx
 
 import {
-  Grid,
-  TextField,
-  MenuItem,
   Alert,
   Button,
-  CircularProgress,
   Card,
   CardContent,
-  Box,
-  Typography,
-} from "@mui/material";
+  CircularProgress,
+  Grid,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 
-import UserRoleChips from "./UserRoleChips";
+import UserRoleChips from './UserRoleChips';
 import {
+  DEPARTMENT_OPTIONS,
   ROLE_OPTIONS,
   STATUS_OPTIONS,
-  DEPARTMENT_OPTIONS,
-} from "./userConstants";
+} from './userConstants';
 
 export default function UserForm({
   form,
@@ -43,15 +41,15 @@ export default function UserForm({
     }));
 
   return (
-    <Card className="shadow-lg">
+    <Card className='shadow-lg'>
       <CardContent>
         <form onSubmit={onSubmit}>
           <Grid container spacing={3}>
             {/* FIRST NAME */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
-                label="First Name"
-                name="firstName"
+                label='First Name'
+                name='firstName'
                 fullWidth
                 required
                 value={form.firstName}
@@ -62,8 +60,8 @@ export default function UserForm({
             {/* LAST NAME */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
-                label="Last Name"
-                name="lastName"
+                label='Last Name'
+                name='lastName'
                 fullWidth
                 value={form.lastName}
                 onChange={handleChange}
@@ -73,8 +71,8 @@ export default function UserForm({
             {/* EMAIL */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
-                label="Email"
-                name="email"
+                label='Email'
+                name='email'
                 fullWidth
                 required
                 value={form.email}
@@ -85,38 +83,25 @@ export default function UserForm({
             {/* PHONE */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
-                label="Phone"
-                name="phone"
+                label='Phone'
+                name='phone'
                 fullWidth
                 value={form.phone}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* USERNAME (ONLY FOR EDIT USER) */}
-            {"username" in form && (
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  label="Username"
-                  name="username"
-                  fullWidth
-                  InputProps={{ readOnly: true }}
-                  value={form.username}
-                />
-              </Grid>
-            )}
-
             {/* DEPARTMENT */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 select
-                label="Department"
-                name="department"
+                label='Department'
+                name='department'
                 fullWidth
                 value={form.department}
                 onChange={handleChange}
               >
-                <MenuItem value="" disabled>
+                <MenuItem value='' disabled>
                   Select Department
                 </MenuItem>
                 {DEPARTMENT_OPTIONS.map((d) => (
@@ -141,8 +126,8 @@ export default function UserForm({
               <TextField
                 select
                 fullWidth
-                label="Status"
-                name="status"
+                label='Status'
+                name='status'
                 value={form.status}
                 onChange={handleChange}
               >
@@ -157,26 +142,26 @@ export default function UserForm({
             {/* ERROR */}
             {error && (
               <Grid size={{ xs: 12 }}>
-                <Alert severity="error">{error}</Alert>
+                <Alert severity='error'>{error}</Alert>
               </Grid>
             )}
 
             {/* ACTION BUTTONS */}
-            <Grid size={{ xs: 12 }} className="mt-4 flex gap-4">
+            <Grid size={{ xs: 12 }} className='mt-4 flex gap-4'>
               <Button
-                variant="contained"
-                type="submit"
+                variant='contained'
+                type='submit'
                 disabled={loading}
-                className="!bg-blue-600 hover:!bg-blue-700"
+                className='!bg-blue-600 hover:!bg-blue-700'
               >
                 {loading ? (
-                  <CircularProgress size={22} className="text-white" />
+                  <CircularProgress size={22} className='text-white' />
                 ) : (
                   submitLabel
                 )}
               </Button>
 
-              <Button variant="outlined" onClick={onCancel}>
+              <Button variant='outlined' onClick={onCancel}>
                 Cancel
               </Button>
             </Grid>

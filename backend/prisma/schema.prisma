@@ -30,15 +30,14 @@ model User {
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  firstName    String
-  lastName     String
-  email        String  @unique
-  phone        String?
-  username     String  @unique
-  passwordHash String
+  firstName         String
+  lastName          String
+  email             String
+  phone             String?
+  passwordHash      String
   mustResetPassword Boolean @default(true)
-  department   String?
-  status       String  @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
+  department        String?
+  status            String  @default("ACTIVE") // ACTIVE, INACTIVE, LOCKED
 
   roles String[] // simple: store role names ["HOSPITAL_ADMIN", "DOCTOR"]
 
@@ -48,8 +47,8 @@ model User {
   patients           Patient[]      @relation("DoctorPatients")
   prescriptions      Prescription[]
   doctorAppointments Appointment[]  @relation("DoctorAppointments")
-  @@unique([email, tenantId])
 
+  @@unique([email, tenantId])
 }
 
 model Patient {
