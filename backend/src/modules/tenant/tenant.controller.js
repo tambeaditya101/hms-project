@@ -52,7 +52,10 @@ export async function handleRegisterTenant(req, res) {
       user: {
         id: adminUser.id,
         tenantId: tenant.id,
+        firstName: adminUser.firstName,
+        lastName: adminUser.lastName,
         email: adminUser.email,
+        phone: adminUser.phone,
         roles: adminUser.roles,
         department: adminUser.department,
         status: adminUser.status,

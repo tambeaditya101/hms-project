@@ -34,7 +34,10 @@ export async function loginUser(email, password) {
     user: {
       id: user.id,
       tenantId: user.tenantId,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
+      phone: user.phone,
       roles: user.roles,
       department: user.department,
       status: user.status,
